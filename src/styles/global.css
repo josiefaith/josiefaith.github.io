@@ -229,7 +229,7 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
   border-radius: var(--radius);
   /* sepia pulls the echo toward candlelight amber — warm, never clinical */
   filter: blur(30px) sepia(0.6) saturate(1.35) brightness(0.95);
-  opacity: 0.42;
+  opacity: 0.38;
   pointer-events: none;
 }
 .art-wrap .art { position: relative; }
