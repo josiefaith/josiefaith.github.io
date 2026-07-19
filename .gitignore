@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Env / secrets
+.env
+.env.*
+*.local
+
+# Claude Code local (personal, machine-specific) settings
+.claude/settings.local.json
+
+# Logs / temp
+*.log
+tmp/
+.cache/
+
+# NOTE: /scratch is intentionally NOT ignored — it is tracked in git on purpose.
+# (It lives in .claudeignore so Claude won't auto-read it, but its history is kept.)
