@@ -1,6 +1,7 @@
 ---
 import '@fontsource-variable/playfair-display';
 import '@fontsource-variable/lora';
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import IrisMark from '../components/IrisMark.astro';
 import artist from '../data/artist.json';
@@ -41,6 +42,7 @@ const social = [
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
+    <ClientRouter />
   </head>
   <body>
     <header class="site-header">
@@ -77,5 +79,33 @@ const social = [
         </div>
       </div>
     </footer>
+
+    <script>
+      // Gentle scroll reveals; skipped entirely for reduced-motion users.
+      // astro:page-load fires on first load and after every ClientRouter swap.
+      function initReveals() {
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const els = Array.from(document.querySelectorAll('main section, main article'));
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('in');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { threshold: 0.08 }
+        );
+        els.forEach((el) => {
+          el.classList.add('reveal');
+          io.observe(el);
+        });
+        // Safety net: if observer callbacks never deliver (embedded/background
+        // views), nothing may stay hidden — reveal everything after 1s.
+        setTimeout(() => els.forEach((el) => el.classList.add('in')), 1000);
+      }
+      document.addEventListener('astro:page-load', initReveals);
+    </script>
   </body>
 </html>

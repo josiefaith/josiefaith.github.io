@@ -1,0 +1,19 @@
+---
+// Artwork with a soft blurred "glow halo" of itself behind — vinyl under
+// lamplight. Falls back to the iris placeholder when no art exists yet.
+import IrisMark from './IrisMark.astro';
+
+interface Props {
+  src?: string | null;
+  alt?: string;
+  placeholderSize?: number;
+}
+const { src = null, alt = '', placeholderSize = 44 } = Astro.props;
+---
+
+<div class="art-wrap">
+  {src && <img class="art-glow" src={src} alt="" aria-hidden="true" loading="lazy" />}
+  <div class="art">
+    {src ? <img src={src} alt={alt} loading="lazy" /> : <IrisMark size={placeholderSize} class="art-placeholder" />}
+  </div>
+</div>

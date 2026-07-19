@@ -193,6 +193,21 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
 }
 
+/* artwork glow halo — the cover casts a blurred echo of itself */
+.art-wrap { position: relative; }
+.art-glow {
+  position: absolute;
+  inset: 6%;
+  width: 88%;
+  height: 88%;
+  object-fit: cover;
+  border-radius: var(--radius);
+  filter: blur(30px) saturate(1.15);
+  opacity: 0.4;
+  pointer-events: none;
+}
+.art-wrap .art { position: relative; }
+
 /* album art (or its placeholder) */
 .art {
   aspect-ratio: 1;
@@ -370,6 +385,38 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
   gap: 1.4rem;
   flex-wrap: wrap;
   align-items: center;
+}
+
+/* ——— hero ghost iris — sensed more than seen ——— */
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+.hero-ghost {
+  position: absolute;
+  z-index: -1;
+  right: clamp(-20px, 4vw, 90px);
+  top: 0;
+  width: min(360px, 42vw);
+  height: auto;
+  color: var(--iris);
+  opacity: 0.03;
+  pointer-events: none;
+  transform: rotate(8deg);
+}
+
+/* ——— scroll reveals (class applied by JS; no-JS users see everything) ——— */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
 }
 
 /* ——— responsive ——— */

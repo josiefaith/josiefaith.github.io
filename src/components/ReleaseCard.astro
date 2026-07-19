@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import IrisMark from './IrisMark.astro';
+import Art from './Art.astro';
 
 interface Props {
   release: CollectionEntry<'releases'>;
@@ -16,9 +16,7 @@ const platformLinks = [
 ---
 
 <div class="card">
-  <div class="art">
-    {art ? <img src={`/art/${art}`} alt={`${title} artwork`} loading="lazy" /> : <IrisMark size={44} class="art-placeholder" />}
-  </div>
+  <Art src={art ? `/art/${art}` : null} alt={`${title} artwork`} placeholderSize={44} />
   <h3 style="margin-top: 1rem;">{title}</h3>
   <p class="muted small" style="margin-bottom: 0.6rem;">
     {type === 'single' ? 'Single' : type.toUpperCase() === 'EP' ? 'EP' : 'Album'}{year && ` · ${year}`}

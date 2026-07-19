@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Art from '../components/Art.astro';
 import IrisMark from '../components/IrisMark.astro';
 import artist from '../data/artist.json';
 
@@ -9,12 +10,8 @@ const photo: string | null = '/art/josie.jpg';
 <Base title="About">
   <section class="container">
     <div class="feature-split">
-      <div class="art" style="max-width: 340px;">
-        {photo ? (
-          <img src={photo} alt={artist.name} />
-        ) : (
-          <IrisMark size={72} class="art-placeholder" />
-        )}
+      <div style="max-width: 340px;">
+        <Art src={photo} alt={artist.name} placeholderSize={72} />
       </div>
       <div>
         <p class="eyebrow">About</p>
