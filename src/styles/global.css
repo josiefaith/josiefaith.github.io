@@ -221,14 +221,15 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
 .art-wrap { position: relative; }
 .art-glow {
   position: absolute;
-  top: -5%;
-  left: -5%;
-  width: 110%;
-  height: 110%;
+  top: -4%;
+  left: -4%;
+  width: 108%;
+  height: 108%;
   object-fit: cover;
   border-radius: var(--radius);
-  filter: blur(34px) saturate(1.25);
-  opacity: 0.6;
+  /* sepia pulls the echo toward candlelight amber — warm, never clinical */
+  filter: blur(30px) sepia(0.6) saturate(1.35) brightness(0.95);
+  opacity: 0.42;
   pointer-events: none;
 }
 .art-wrap .art { position: relative; }
@@ -247,18 +248,6 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
   border: 1px solid var(--line);
 }
 .art img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-/* subtle violet wash so every image sits in the room's light */
-.art img { filter: saturate(0.88) contrast(1.02); }
-.art::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #7a5fae;
-  mix-blend-mode: soft-light;
-  opacity: 0.22;
-  pointer-events: none;
-}
 .art-placeholder { color: var(--iris); opacity: 0.5; }
 
 /* featured release: art + details side by side */
@@ -289,6 +278,19 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
   color: var(--iris);
   margin-right: 0.7rem;
   font-variant-numeric: tabular-nums;
+}
+
+/* marker margin notes — the Raw cover's handwriting, whispering */
+.note {
+  display: inline-block;
+  font-family: 'Caveat Variable', cursive;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--amber-soft);
+  opacity: 0.8;
+  transform: rotate(var(--note-rotate, -3deg));
+  letter-spacing: 0.01em;
+  line-height: 1.2;
 }
 
 /* embedded player — listen without leaving */
@@ -438,9 +440,10 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.024;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='230' height='290' viewBox='0 0 230 290'%3E%3Cg transform='translate(83 62) rotate(8 32 42)' fill='none' stroke='%23a48fd6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M32 82 C32 66 32 54 32 40'/%3E%3Cpath d='M32 70 C23 66 17 57 18 45 C27 50 31 58 32 66'/%3E%3Cpath d='M32 40 C26.5 32 26.5 17 32 8 C37.5 17 37.5 32 32 40 Z'/%3E%3Cpath d='M32 40 C24 35 19 26 21 16 C29 21 32.5 30 32 40'/%3E%3Cpath d='M32 40 C40 35 45 26 43 16 C35 21 31.5 30 32 40'/%3E%3Cpath d='M32 40 C23 39 13 43 10 53 C19 55 28 49 32 40'/%3E%3Cpath d='M32 40 C41 39 51 43 54 53 C45 55 36 49 32 40'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 230px 290px;
+  opacity: 0.045;
+  /* half-drop wallpaper: two irises per tile, alternating tilt, like a print */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Cg fill='none' stroke='%23a48fd6' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg transform='translate(38 26) rotate(5) scale(1.55)'%3E%3Cpath d='M32 82 C32 66 32 54 32 40'/%3E%3Cpath d='M32 70 C23 66 17 57 18 45 C27 50 31 58 32 66'/%3E%3Cpath d='M32 40 C26.5 32 26.5 17 32 8 C37.5 17 37.5 32 32 40 Z'/%3E%3Cpath d='M32 40 C24 35 19 26 21 16 C29 21 32.5 30 32 40'/%3E%3Cpath d='M32 40 C40 35 45 26 43 16 C35 21 31.5 30 32 40'/%3E%3Cpath d='M32 40 C23 39 13 43 10 53 C19 55 28 49 32 40'/%3E%3Cpath d='M32 40 C41 39 51 43 54 53 C45 55 36 49 32 40'/%3E%3C/g%3E%3Cg transform='translate(185 222) rotate(-7) scale(1.4)'%3E%3Cpath d='M32 82 C32 66 32 54 32 40'/%3E%3Cpath d='M32 70 C23 66 17 57 18 45 C27 50 31 58 32 66'/%3E%3Cpath d='M32 40 C26.5 32 26.5 17 32 8 C37.5 17 37.5 32 32 40 Z'/%3E%3Cpath d='M32 40 C24 35 19 26 21 16 C29 21 32.5 30 32 40'/%3E%3Cpath d='M32 40 C40 35 45 26 43 16 C35 21 31.5 30 32 40'/%3E%3Cpath d='M32 40 C23 39 13 43 10 53 C19 55 28 49 32 40'/%3E%3Cpath d='M32 40 C41 39 51 43 54 53 C45 55 36 49 32 40'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-size: 300px 400px;
 }
 
 /* ——— the iris draws itself (stem first, from the ground up) ——— */
