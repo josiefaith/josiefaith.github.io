@@ -26,6 +26,14 @@ Brooklyn open mics get booked), About.
   each earns its place later; stale sections are worse than missing ones.
 
 ## Where it stands
-Built and verified locally (desktop + mobile). Not deployed — GitHub Pages is
-the plan, pending josie's go-ahead to create a public repo. Her worklist of
-verifications and copy rewrites is in TODO.md.
+**LIVE: https://josiefaith.github.io** (launched 2026-07-19). Josie renamed
+her GitHub account to `josiefaith` for the URL; the site auto-redeploys on
+every push. Real album art (*Raw*, *Almost*) and her About photo are in; she
+rewrote the tagline and bio in her own voice; public contact is
+jdmusicisme@gmail.com. Launch-day fix: the hero "J" rendered with a glitch —
+cause was manually forcing the font's optical-size axis; removed.
+
+Remaining worklist lives in TODO.md (YouTube link, link verification, Raw
+blurb, first real song story, someday josiefaith.com). Open question: the
+repo is public, so the tracked scratch/ folder is world-readable — deciding
+whether to untrack it.

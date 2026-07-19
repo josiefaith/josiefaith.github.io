@@ -12,9 +12,8 @@ Working checklist for getting the site launch-ready. Delete items as they're don
 
 ## Supply
 - [ ] YouTube channel/artist URL (couldn't find it) → `src/data/artist.json`
-- [ ] Save the 3 photos josie shared in chat into `public/art/` as
-      `raw.jpg`, `almost.jpg`, `josie.jpg` — then Claude wires them in
-- [ ] Single artwork (optional, same pattern)
+- [x] Raw cover, Almost cover, About photo — wired in (done 2026-07-19)
+- [ ] Single artwork (optional: drop in `public/art/`, add `art:` in the single's file)
 - [x] Contact email → jdmusicisme@gmail.com (done 2026-07-19)
 
 ## Rewrite in your voice
@@ -24,5 +23,5 @@ Working checklist for getting the site launch-ready. Delete items as they're don
 - [ ] Write your first real song story (copy `src/content/songs/_template.md`)
 
 ## Later
-- [ ] Deploy to GitHub Pages (needs a GitHub repo — say the word)
-- [ ] Custom domain (josiefaith.com?) once deployed
+- [x] Deploy to GitHub Pages — LIVE at https://josiefaith.github.io (2026-07-19)
+- [ ] Custom domain (josiefaith.com?) — CNAME + repo Settings → Pages when ready

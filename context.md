@@ -21,8 +21,19 @@ web-researched (via Opus subagent) — **josie must verify** (see TODO.md).
 - Shows collection is empty → build prints a benign "collection empty" note.
 - YouTube link unknown — empty string in artist.json hides those buttons.
 
+## Deployment
+LIVE at https://josiefaith.github.io (GitHub Pages, repo
+josiefaith/josiefaith.github.io, user renamed derosajosie-ops→josiefaith).
+Push to main → Actions workflow (.github/workflows/deploy.yml) rebuilds and
+publishes in ~1 min. Pages build_type=workflow (was legacy; switched via API).
+Real art wired (raw/almost covers, about photo — resized via sips). Hero J
+glyph glitch fixed by dropping manual 'opsz' font-variation-settings.
+
+## Open question (privacy)
+The repo is PUBLIC → tracked `scratch/` notes would be world-readable.
+Currently only the README is in there. Recommend untracking scratch as a
+project delta; josie hasn't decided yet — ask before acting.
+
 ## Next
-- Josie works through TODO.md (verify links, art, photo, rewrite copy drafts).
-- Deploy: create GitHub repo + Pages workflow (needs josie's go-ahead).
-  If repo is named `josiederosa.github.io` no `base` path is needed;
-  otherwise set `base` in astro.config.mjs.
+- Remaining TODO.md items: YouTube URL, verify streaming links, Raw blurb
+  rewrite, first real song story, optional single artwork, custom domain.
