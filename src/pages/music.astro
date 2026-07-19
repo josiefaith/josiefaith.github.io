@@ -1,0 +1,100 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import IrisMark from '../components/IrisMark.astro';
+import ReleaseCard from '../components/ReleaseCard.astro';
+
+const all = await getCollection('releases');
+const released = all
+  .filter((r) => r.data.status === 'released')
+  .sort((a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0));
+const featured = released.find((r) => r.data.featured);
+const singles = released.filter((r) => r.id !== featured?.id);
+const teasers = all.filter((r) => r.data.status === 'teaser');
+
+let FeaturedBody = null;
+if (featured) {
+  const rendered = await render(featured);
+  FeaturedBody = rendered.Content;
+}
+
+const featuredLinks = featured
+  ? [
+      ['Spotify', featured.data.links.spotify],
+      ['Apple Music', featured.data.links.apple],
+      ['YouTube', featured.data.links.youtube],
+    ].filter(([, url]) => url)
+  : [];
+---
+
+<Base title="Music">
+  <section class="container">
+    <h1 style="font-size: clamp(2.2rem, 5vw, 3.2rem);">Music</h1>
+  </section>
+
+  {featured && (
+    <section class="container">
+      <p class="eyebrow">The album</p>
+      <div class="feature-split">
+        <div class="art">
+          {featured.data.art ? (
+            <img src={`/art/${featured.data.art}`} alt={`${featured.data.title} artwork`} />
+          ) : (
+            <IrisMark size={72} class="art-placeholder" />
+          )}
+        </div>
+        <div>
+          <h2 style="margin-bottom: 0.2rem;">{featured.data.title}</h2>
+          <p class="muted small">
+            Album · {featured.data.date?.getFullYear()} · {featured.data.tracklist.length} tracks
+          </p>
+          {FeaturedBody && <div class="prose"><FeaturedBody /></div>}
+          <div class="btn-row" style="margin: 1rem 0 1.4rem;">
+            {featuredLinks.map(([label, url], i) => (
+              <a
+                class={`btn ${i === 0 ? 'btn-primary' : 'btn-ghost'}`}
+                href={url}
+                target="_blank"
+                rel="noopener"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+          {featured.data.tracklist.length > 0 && (
+            <ol class="tracklist">
+              {featured.data.tracklist.map((track) => (
+                <li>{track}</li>
+              ))}
+            </ol>
+          )}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {singles.length > 0 && (
+    <section class="container">
+      <p class="eyebrow">Singles</p>
+      <div class="grid">
+        {singles.map((release) => (
+          <ReleaseCard release={release} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {teasers.length > 0 && (
+    <section class="container" style="padding-bottom: 4.5rem;">
+      <p class="eyebrow">What's next</p>
+      <div class="teaser-strip">
+        {teasers.map((t) => (
+          <div class="teaser">
+            <h3>{t.data.title}</h3>
+            <p class="muted small">{t.data.tagline}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+</Base>

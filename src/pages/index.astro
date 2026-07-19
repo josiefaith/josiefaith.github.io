@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ReleaseCard from '../components/ReleaseCard.astro';
+import artist from '../data/artist.json';
+
+const released = (await getCollection('releases', (r) => r.data.status === 'released')).sort(
+  (a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0)
+);
+const latest = released[0];
+const album = released.find((r) => r.data.featured);
+
+const now = new Date();
+const nextShow = (await getCollection('shows'))
+  .filter((s) => s.data.date >= now)
+  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf())[0];
+
+const storyCount = (await getCollection('songs', (s) => import.meta.env.DEV || !s.data.draft)).length;
+
+const fmtShow = (d: Date) =>
+  d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+---
+
+<Base>
+  <section class="container" style="padding-top: clamp(3rem, 10vw, 6rem);">
+    <p class="eyebrow">Singer-songwriter · {artist.location}</p>
+    <h1>{artist.name}</h1>
+    <p class="muted" style="font-size: 1.2rem; max-width: 34ch;">{artist.tagline}</p>
+    <div class="btn-row" style="margin-top: 1.6rem;">
+      {artist.links.spotify && (
+        <a class="btn btn-primary" href={artist.links.spotify} target="_blank" rel="noopener">
+          Listen on Spotify
+        </a>
+      )}
+      {artist.links.apple && (
+        <a class="btn btn-ghost" href={artist.links.apple} target="_blank" rel="noopener">
+          Apple Music
+        </a>
+      )}
+      {artist.links.youtube && (
+        <a class="btn btn-ghost" href={artist.links.youtube} target="_blank" rel="noopener">
+          YouTube
+        </a>
+      )}
+    </div>
+  </section>
+
+  <section class="container">
+    <p class="eyebrow">Latest release</p>
+    <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 280px));">
+      <ReleaseCard release={latest} />
+      {album && album.id !== latest.id && <ReleaseCard release={album} />}
+    </div>
+    <p style="margin-top: 1.4rem;"><a href="/music/">All music →</a></p>
+  </section>
+
+  <section class="container">
+    <div class="card" style="padding: clamp(1.6rem, 4vw, 2.6rem);">
+      <p class="eyebrow">Behind the songs</p>
+      <h2>Every song has a reason</h2>
+      <p class="muted" style="max-width: 56ch;">
+        I write lyrics first. This is the part of the site where I tell you what the songs are
+        actually about — where they came from, what they mean, and the details that don't fit in
+        three and a half minutes.
+      </p>
+      <a class="btn btn-ghost" href="/songs/">
+        {storyCount > 0 ? 'Read the stories' : 'Coming soon'}
+      </a>
+    </div>
+  </section>
+
+  <section class="container" style="padding-bottom: 4rem;">
+    <p class="eyebrow">Next show</p>
+    {nextShow ? (
+      <div class="show-row">
+        <span class="show-date">{fmtShow(nextShow.data.date)}</span>
+        <span>
+          {nextShow.data.venue} — {nextShow.data.city}
+          {nextShow.data.note && <span class="muted"> · {nextShow.data.note}</span>}
+        </span>
+        {nextShow.data.link && <a href={nextShow.data.link} target="_blank" rel="noopener">Details</a>}
+      </div>
+    ) : (
+      <p class="muted">
+        Working on booking Brooklyn open mics — <a href={artist.links.instagram} target="_blank" rel="noopener">follow along</a> to hear first.
+        <a href="/shows/" style="margin-left: 0.5rem;">Shows page →</a>
+      </p>
+    )}
+  </section>
+</Base>

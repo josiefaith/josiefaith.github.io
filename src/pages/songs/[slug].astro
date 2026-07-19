@@ -1,0 +1,48 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import IrisMark from '../../components/IrisMark.astro';
+
+export async function getStaticPaths() {
+  const songs = await getCollection('songs', (s) => import.meta.env.DEV || !s.data.draft);
+  return songs.map((song) => ({ params: { slug: song.id }, props: { song } }));
+}
+
+const { song } = Astro.props;
+const { Content } = await render(song);
+const releases = await getCollection('releases');
+const release = releases.find((r) => r.id === song.data.release);
+---
+
+<Base title={song.data.title}>
+  <article class="container" style="padding-top: 3rem; padding-bottom: 4.5rem;">
+    <p class="eyebrow">Behind the song</p>
+    <h1 style="font-size: clamp(2rem, 5vw, 3rem);">{song.data.title}</h1>
+    {release && (
+      <p class="muted small">
+        from <em>{release.data.title}</em>
+        {release.data.date && ` · ${release.data.date.getFullYear()}`}
+      </p>
+    )}
+
+    <div class="prose" style="margin-top: 1.6rem;">
+      <Content />
+    </div>
+
+    {song.data.lyrics && (
+      <>
+        <div class="divider" style="max-width: 62ch;"><IrisMark size={18} /></div>
+        <pre class="lyrics">{song.data.lyrics.trim()}</pre>
+      </>
+    )}
+
+    <div class="btn-row" style="margin-top: 2rem;">
+      {song.data.listen && (
+        <a class="btn btn-primary" href={song.data.listen} target="_blank" rel="noopener">
+          Listen
+        </a>
+      )}
+      <a class="btn btn-ghost" href="/songs/">All stories</a>
+    </div>
+  </article>
+</Base>

@@ -24,5 +24,10 @@
 tmp/
 .cache/
 
+# Node / Astro
+node_modules/
+dist/
+.astro/
+
 # NOTE: /scratch is intentionally NOT ignored — it is tracked in git on purpose.
 # (It lives in .claudeignore so Claude won't auto-read it, but its history is kept.)

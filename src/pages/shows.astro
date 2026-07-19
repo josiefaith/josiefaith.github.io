@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import IrisMark from '../components/IrisMark.astro';
+import artist from '../data/artist.json';
+
+const shows = await getCollection('shows');
+const now = new Date();
+now.setHours(0, 0, 0, 0);
+const upcoming = shows
+  .filter((s) => s.data.date >= now)
+  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+const past = shows
+  .filter((s) => s.data.date < now)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+---
+
+<Base title="Shows">
+  <section class="container">
+    <h1 style="font-size: clamp(2.2rem, 5vw, 3.2rem);">Shows</h1>
+  </section>
+
+  <section class="container" style="padding-top: 0;">
+    <p class="eyebrow">Upcoming</p>
+    {upcoming.length > 0 ? (
+      <div style="max-width: 760px;">
+        {upcoming.map((show) => (
+          <div class="show-row">
+            <span class="show-date">{fmt(show.data.date)}</span>
+            <span>
+              {show.data.venue} — {show.data.city}
+              {show.data.time && <span class="muted"> · {show.data.time}</span>}
+              {show.data.note && <span class="muted"> · {show.data.note}</span>}
+            </span>
+            {show.data.link && <a href={show.data.link} target="_blank" rel="noopener">Details</a>}
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state" style="max-width: 640px;">
+        <div class="divider"><IrisMark size={18} /></div>
+        <p style="margin: 0 0 0.4rem;">Nothing on the calendar yet.</p>
+        <p style="margin: 0;">
+          I'm working on booking open mics around Brooklyn —
+          {artist.links.instagram ? (
+            <a href={artist.links.instagram} target="_blank" rel="noopener"> follow along</a>
+          ) : (
+            ' check back soon'
+          )} to hear first.
+        </p>
+      </div>
+    )}
+  </section>
+
+  {past.length > 0 && (
+    <section class="container" style="padding-bottom: 4.5rem;">
+      <p class="eyebrow">Past</p>
+      <div style="max-width: 760px;">
+        {past.map((show) => (
+          <div class="show-row muted">
+            <span class="show-date" style="color: var(--muted);">{fmt(show.data.date)}</span>
+            <span>{show.data.venue} — {show.data.city}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+</Base>

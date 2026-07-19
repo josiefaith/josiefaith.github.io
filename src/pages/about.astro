@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import IrisMark from '../components/IrisMark.astro';
+import artist from '../data/artist.json';
+
+const photo: string | null = null; // set to '/art/josie.jpg' once a photo lands in public/art/
+---
+
+<Base title="About">
+  <section class="container">
+    <div class="feature-split">
+      <div class="art" style="max-width: 340px;">
+        {photo ? (
+          <img src={photo} alt={artist.name} />
+        ) : (
+          <IrisMark size={72} class="art-placeholder" />
+        )}
+      </div>
+      <div>
+        <p class="eyebrow">About</p>
+        <h1 style="font-size: clamp(2.2rem, 5vw, 3.2rem);">{artist.name}</h1>
+        <div class="prose">
+          {artist.bio.map((para) => <p>{para}</p>)}
+        </div>
+
+        <div class="divider" style="max-width: 40ch;"><IrisMark size={18} /></div>
+
+        <p class="muted small" style="max-width: 52ch;">
+          Booking an open mic lineup or a small show? I'd love to hear from you —
+          <a href={`mailto:${artist.email}`}>{artist.email}</a>.
+        </p>
+        <div class="btn-row" style="margin-top: 1.2rem;">
+          {artist.links.instagram && (
+            <a class="btn btn-ghost" href={artist.links.instagram} target="_blank" rel="noopener">
+              Instagram
+            </a>
+          )}
+          {artist.links.tiktok && (
+            <a class="btn btn-ghost" href={artist.links.tiktok} target="_blank" rel="noopener">
+              TikTok
+            </a>
+          )}
+          <a class="btn btn-primary" href={`mailto:${artist.email}`}>Get in touch</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,8 +1,11 @@
 # josie_rep
 
 ## Purpose
-New project — purpose not yet defined. Update this section once the work has a
-shape.
+The home base for josie's music as **Josie Faith** — an artist website
+(Astro static site) presenting her releases, per-song "Behind the Songs"
+stories, shows, and bio. Built to be updated by adding/editing markdown files
+in `src/content/` (see the `_template.md` in each collection folder).
+Destined for GitHub Pages; not yet deployed.
 
 ## Owner
 josie (derosajosie@gmail.com).

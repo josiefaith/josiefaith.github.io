@@ -1,0 +1,31 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import IrisMark from './IrisMark.astro';
+
+interface Props {
+  release: CollectionEntry<'releases'>;
+}
+const { release } = Astro.props;
+const { title, type, date, art, links } = release.data;
+const year = date?.getFullYear();
+const platformLinks = [
+  ['Spotify', links.spotify],
+  ['Apple Music', links.apple],
+  ['YouTube', links.youtube],
+].filter(([, url]) => url);
+---
+
+<div class="card">
+  <div class="art">
+    {art ? <img src={`/art/${art}`} alt={`${title} artwork`} loading="lazy" /> : <IrisMark size={44} class="art-placeholder" />}
+  </div>
+  <h3 style="margin-top: 1rem;">{title}</h3>
+  <p class="muted small" style="margin-bottom: 0.6rem;">
+    {type === 'single' ? 'Single' : type.toUpperCase() === 'EP' ? 'EP' : 'Album'}{year && ` · ${year}`}
+  </p>
+  <div class="platforms">
+    {platformLinks.map(([label, url]) => (
+      <a href={url} target="_blank" rel="noopener">{label}</a>
+    ))}
+  </div>
+</div>
