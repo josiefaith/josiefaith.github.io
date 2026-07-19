@@ -9,9 +9,13 @@ import artist from '../data/artist.json';
 interface Props {
   title?: string;
   description?: string;
+  drawIris?: boolean; // homepage: the brand iris draws itself in
 }
-const { title, description = `${artist.name} — music, the stories behind the songs, and shows.` } =
-  Astro.props;
+const {
+  title,
+  description = `${artist.name} — music, the stories behind the songs, and shows.`,
+  drawIris = false,
+} = Astro.props;
 const pageTitle = title ? `${title} · ${artist.name}` : `${artist.name} — ${artist.tagline}`;
 
 const nav = [
@@ -48,7 +52,7 @@ const social = [
     <header class="site-header">
       <div class="container">
         <a href="/" class="brand">
-          <IrisMark size={22} />
+          <IrisMark size={22} draw={drawIris} />
           <span>{artist.name}</span>
         </a>
         <nav class="site-nav" aria-label="Main">

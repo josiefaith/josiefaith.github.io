@@ -43,6 +43,30 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* candlelight — the room breathes, slowly, warmly */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: radial-gradient(
+    85% 60% at 50% -5%,
+    rgba(224, 164, 88, 0.07) 0%,
+    rgba(37, 26, 55, 0.45) 45%,
+    transparent 75%
+  );
+  transform-origin: 50% 0%;
+  animation: candle 9s ease-in-out infinite;
+}
+@keyframes candle {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
+}
+
 /* film grain — barely there */
 body::after {
   content: '';
@@ -197,19 +221,21 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
 .art-wrap { position: relative; }
 .art-glow {
   position: absolute;
-  inset: 6%;
-  width: 88%;
-  height: 88%;
+  top: -5%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
   object-fit: cover;
   border-radius: var(--radius);
-  filter: blur(30px) saturate(1.15);
-  opacity: 0.4;
+  filter: blur(34px) saturate(1.25);
+  opacity: 0.6;
   pointer-events: none;
 }
 .art-wrap .art { position: relative; }
 
 /* album art (or its placeholder) */
 .art {
+  position: relative;
   aspect-ratio: 1;
   width: 100%;
   border-radius: var(--radius);
@@ -221,6 +247,18 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
   border: 1px solid var(--line);
 }
 .art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* subtle violet wash so every image sits in the room's light */
+.art img { filter: saturate(0.88) contrast(1.02); }
+.art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #7a5fae;
+  mix-blend-mode: soft-light;
+  opacity: 0.22;
+  pointer-events: none;
+}
 .art-placeholder { color: var(--iris); opacity: 0.5; }
 
 /* featured release: art + details side by side */
@@ -251,6 +289,13 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
   color: var(--iris);
   margin-right: 0.7rem;
   font-variant-numeric: tabular-nums;
+}
+
+/* embedded player — listen without leaving */
+.spotify-embed {
+  display: block;
+  border-radius: 14px;
+  margin: 0.4rem 0 1.4rem;
 }
 
 /* platform link row (small text style) */
@@ -387,29 +432,42 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
   align-items: center;
 }
 
-/* ——— hero ghost iris — sensed more than seen ——— */
-.hero {
-  position: relative;
-  isolation: isolate;
-}
-.hero-ghost {
-  position: absolute;
+/* ——— the iris field — a wallpaper of ghosts under the homepage ——— */
+.iris-field {
+  position: fixed;
+  inset: 0;
   z-index: -1;
-  right: clamp(-20px, 4vw, 90px);
-  top: 0;
-  width: min(360px, 42vw);
-  height: auto;
-  color: var(--iris);
-  opacity: 0.03;
   pointer-events: none;
-  transform: rotate(8deg);
+  opacity: 0.024;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='230' height='290' viewBox='0 0 230 290'%3E%3Cg transform='translate(83 62) rotate(8 32 42)' fill='none' stroke='%23a48fd6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M32 82 C32 66 32 54 32 40'/%3E%3Cpath d='M32 70 C23 66 17 57 18 45 C27 50 31 58 32 66'/%3E%3Cpath d='M32 40 C26.5 32 26.5 17 32 8 C37.5 17 37.5 32 32 40 Z'/%3E%3Cpath d='M32 40 C24 35 19 26 21 16 C29 21 32.5 30 32 40'/%3E%3Cpath d='M32 40 C40 35 45 26 43 16 C35 21 31.5 30 32 40'/%3E%3Cpath d='M32 40 C23 39 13 43 10 53 C19 55 28 49 32 40'/%3E%3Cpath d='M32 40 C41 39 51 43 54 53 C45 55 36 49 32 40'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 230px 290px;
+}
+
+/* ——— the iris draws itself (stem first, from the ground up) ——— */
+.iris-draw path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: iris-draw 0.7s ease forwards;
+}
+.iris-draw path:nth-child(1) { animation-delay: 0.15s; animation-duration: 0.6s; } /* stem */
+.iris-draw path:nth-child(2) { animation-delay: 0.6s; }  /* leaf */
+.iris-draw path:nth-child(3) { animation-delay: 1.0s; }  /* center standard */
+.iris-draw path:nth-child(4) { animation-delay: 1.15s; } /* left standard */
+.iris-draw path:nth-child(5) { animation-delay: 1.3s; }  /* right standard */
+.iris-draw path:nth-child(6) { animation-delay: 1.45s; } /* left fall */
+.iris-draw path:nth-child(7) { animation-delay: 1.6s; }  /* right fall */
+@keyframes iris-draw {
+  to { stroke-dashoffset: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .iris-draw path { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; }
 }
 
 /* ——— scroll reveals (class applied by JS; no-JS users see everything) ——— */
 .reveal {
   opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.65s ease, transform 0.65s ease;
+  transform: translateY(26px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .reveal.in {
   opacity: 1;

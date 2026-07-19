@@ -59,6 +59,18 @@ const featuredLinks = featured
               </a>
             ))}
           </div>
+          {featured.data.links.spotify && (
+            <iframe
+              class="spotify-embed"
+              src={`https://open.spotify.com/embed/album/${featured.data.links.spotify.split('/').pop()}?theme=0`}
+              width="100%"
+              height="152"
+              style="border: 0;"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              title={`Play ${featured.data.title} on Spotify`}
+            />
+          )}
           {featured.data.tracklist.length > 0 && (
             <ol class="tracklist">
               {featured.data.tracklist.map((track) => (
