@@ -26,8 +26,11 @@ LIVE at https://josiefaith.github.io (GitHub Pages, repo
 josiefaith/josiefaith.github.io, user renamed derosajosie-ops→josiefaith).
 Push to main → Actions workflow (.github/workflows/deploy.yml) rebuilds and
 publishes in ~1 min. Pages build_type=workflow (was legacy; switched via API).
-Real art wired (raw/almost covers, about photo — resized via sips). Hero J
-glyph glitch fixed by dropping manual 'opsz' font-variation-settings.
+Real art wired (raw/almost covers, about photo — resized via sips).
+Display font is **Playfair Display** (was Fraunces): Fraunces draws its
+capital J with an intentional notched serif that reads as a glitch at
+title sizes — not a rendering bug (tested WONK/SOFT/opsz axes; identical).
+Don't bring Fraunces back while the hero word starts with J.
 
 ## Open question (privacy)
 The repo is PUBLIC → tracked `scratch/` notes would be world-readable.
