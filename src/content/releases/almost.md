@@ -3,5 +3,5 @@ title: "Almost"
 type: album
 status: teaser
 art: almost.jpg
-tagline: "A finished album, waiting for its moment."
+tagline: "A work in progress."
 ---
