@@ -1,6 +1,7 @@
 # josie_rep
 
-A new project, set up with the shared [ai_starter](../ai_starter) working rules.
+A new project owned by josie (derosajosie@gmail.com), set up with the shared
+[ai_starter](../ai_starter) working rules (my uncle Boyd's kit).
 
 ## Setup notes
 - **Shared rules are imported, not copied.** [CLAUDE.md](CLAUDE.md) pulls in

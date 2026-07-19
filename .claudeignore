@@ -1,4 +1,4 @@
-# Private scratchpad / memory area.
+# josie's private scratchpad / memory area.
 # Don't read or interpret its contents unless explicitly asked.
 # (Still tracked in git — see .gitignore.)
 /scratch

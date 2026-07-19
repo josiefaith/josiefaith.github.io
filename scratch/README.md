@@ -1,6 +1,6 @@
 # scratch
 
-Private scratchpad / memory area — notes, prompt prep, half-formed ideas.
+josie's private scratchpad / memory area — notes, prompt prep, half-formed ideas.
 
 Tracked in git (history kept). Claude doesn't read or act on this folder unless
 explicitly asked — enforced by the shared scratch rule (imported into CLAUDE.md)
