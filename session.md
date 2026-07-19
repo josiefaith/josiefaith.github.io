@@ -40,5 +40,14 @@ wrong font for a Josie), scratch/ untracked now that the repo is public
 headlines and the latest single sits smaller beneath, and "Every song has a
 story."
 
+Then the beauty pass, guided by josie's brief — "a dark room lit by
+candlelight you wandered into; inviting, not scary, not sad": iris wallpaper
+across the home page, a breathing candle glow, the brand iris drawing itself
+stem-first, warm gold art halos (violet image wash tried and rejected —
+"morgue-y"), livelier scroll reveals, page crossfades, and a playable Spotify
+embed on Music. Unreleased placards now read "A work in progress" (Almost)
+and "To Be Announced" (Real). Marker-handwriting annotations are built and
+previewed but NOT shipped — josie wants approval rights on those.
+
 Remaining worklist lives in TODO.md (YouTube link, link verification, Raw
 blurb, first real song story, someday josiefaith.com).

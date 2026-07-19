@@ -38,6 +38,19 @@ a delta in CLAUDE.md; .gitignore carries the entry. The old scratch/README.md
 remains in pushed git history — contents were only folder conventions,
 nothing private.
 
+## Visual language (josie-calibrated, don't regress)
+"A dark room lit by candlelight you wandered into — inviting, not scary."
+- Half-drop iris wallpaper on home (4.5%); candle glow breathes 9s;
+  brand iris self-draws on home (stem first); reveals 26px/0.9s;
+  art halos sepia-warmed at 0.38 (per josie: warm gold, never cold);
+  NO violet wash on images (read "morgue-y" — removed at her request).
+- Spotify album embed on Music page.
+
+## Pending josie's verdict (UNCOMMITTED in working tree)
+Marker annotations preview: Note.astro + Caveat font + two sample notes
+(index/music/Base/package.json changes held back from commits). Ship with
+her words on approval, or delete cleanly on rejection.
+
 ## Next
 - Remaining TODO.md items: YouTube URL, verify streaming links, Raw blurb
   rewrite, first real song story, optional single artwork, custom domain.
