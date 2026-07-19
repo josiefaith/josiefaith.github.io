@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import IrisMark from '../components/IrisMark.astro';
+import Note from '../components/Note.astro';
 import ReleaseCard from '../components/ReleaseCard.astro';
 import artist from '../data/artist.json';
 
@@ -118,6 +119,7 @@ const fmtShow = (d: Date) =>
       <p class="muted">
         Working on booking Brooklyn open mics — <a href={artist.links.instagram} target="_blank" rel="noopener">follow along</a> to hear first.
         <a href="/shows/" style="margin-left: 0.5rem;">Shows page →</a>
+        <Note rotate={-2}>&nbsp;&nbsp;come say hi</Note>
       </p>
     )}
   </section>

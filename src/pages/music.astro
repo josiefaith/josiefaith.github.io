@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Art from '../components/Art.astro';
+import Note from '../components/Note.astro';
 import ReleaseCard from '../components/ReleaseCard.astro';
 
 const all = await getCollection('releases');
@@ -36,11 +37,16 @@ const featuredLinks = featured
     <section class="container">
       <p class="eyebrow">The album</p>
       <div class="feature-split">
-        <Art
-          src={featured.data.art ? `/art/${featured.data.art}` : null}
-          alt={`${featured.data.title} artwork`}
-          placeholderSize={72}
-        />
+        <div>
+          <Art
+            src={featured.data.art ? `/art/${featured.data.art}` : null}
+            alt={`${featured.data.title} artwork`}
+            placeholderSize={72}
+          />
+          <div style="text-align: center; margin-top: 0.9rem;">
+            <Note rotate={-4}>every part of this one is mine</Note>
+          </div>
+        </div>
         <div>
           <h2 style="margin-bottom: 0.2rem;">{featured.data.title}</h2>
           <p class="muted small">

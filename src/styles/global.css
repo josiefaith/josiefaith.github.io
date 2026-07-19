@@ -283,14 +283,13 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
 /* marker margin notes — the Raw cover's handwriting, whispering */
 .note {
   display: inline-block;
-  font-family: 'Caveat Variable', cursive;
-  font-size: 1.4rem;
-  font-weight: 500;
+  font-family: 'Reenie Beanie', cursive;
+  font-size: 1.55rem;
   color: var(--amber-soft);
-  opacity: 0.8;
+  opacity: 0.85;
   transform: rotate(var(--note-rotate, -3deg));
-  letter-spacing: 0.01em;
-  line-height: 1.2;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
 }
 
 /* embedded player — listen without leaving */

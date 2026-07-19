@@ -1,0 +1,10 @@
+---
+// A marker-style margin note, echoing the handwriting on the Raw cover.
+// Use sparingly — a whisper in the margin, not a second voice.
+interface Props {
+  rotate?: number;
+}
+const { rotate = -3 } = Astro.props;
+---
+
+<span class="note" style={`--note-rotate: ${rotate}deg`}><slot /></span>
