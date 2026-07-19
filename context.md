@@ -46,10 +46,12 @@ nothing private.
   NO violet wash on images (read "morgue-y" — removed at her request).
 - Spotify album embed on Music page.
 
-## Pending josie's verdict (UNCOMMITTED in working tree)
-Marker annotations preview: Note.astro + Caveat font + two sample notes
-(index/music/Base/package.json changes held back from commits). Ship with
-her words on approval, or delete cleanly on rejection.
+## Annotations (resolved)
+Marker margin notes shipped 2026-07-19: Note.astro, font **Reenie Beanie**
+(josie picked it from a 4-font audition; Caveat/Permanent Marker/Shadows
+Into Light rejected and uninstalled). Exactly two notes site-wide (Raw art,
+next-show line) — keep them rare; words are Claude's placeholders josie
+kept "for now", she may reword later.
 
 ## Next
 - Remaining TODO.md items: YouTube URL, verify streaming links, Raw blurb
