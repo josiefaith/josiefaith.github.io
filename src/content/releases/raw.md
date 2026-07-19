@@ -4,6 +4,7 @@ type: album
 status: released
 date: 2025-11-11
 tagline: "The first album — every part of it self-made."
+art: raw.jpg
 featured: true
 tracklist:
   - "baby, get it over with"

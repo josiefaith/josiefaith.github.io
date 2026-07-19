@@ -90,6 +90,11 @@ const featuredLinks = featured
       <div class="teaser-strip">
         {teasers.map((t) => (
           <div class="teaser">
+            {t.data.art && (
+              <div class="art teaser-art">
+                <img src={`/art/${t.data.art}`} alt={`${t.data.title} artwork`} loading="lazy" />
+              </div>
+            )}
             <h3>{t.data.title}</h3>
             <p class="muted small">{t.data.tagline}</p>
           </div>

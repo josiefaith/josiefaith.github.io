@@ -12,14 +12,14 @@ Working checklist for getting the site launch-ready. Delete items as they're don
 
 ## Supply
 - [ ] YouTube channel/artist URL (couldn't find it) → `src/data/artist.json`
-- [ ] Album art for *Raw* → drop in `public/art/`, set `art: raw.jpg` in raw.md
+- [ ] Save the 3 photos josie shared in chat into `public/art/` as
+      `raw.jpg`, `almost.jpg`, `josie.jpg` — then Claude wires them in
 - [ ] Single artwork (optional, same pattern)
-- [ ] A photo of you for the About page → `public/art/josie.jpg`
-- [ ] Confirm you want derosajosie@gmail.com public as the contact email
+- [x] Contact email → jdmusicisme@gmail.com (done 2026-07-19)
 
-## Rewrite in your voice (drafted by Claude, flagged for your rewrite)
-- [ ] Tagline ("Songs written close to the bone.") → `src/data/artist.json`
-- [ ] Bio paragraphs → `src/data/artist.json`
+## Rewrite in your voice
+- [x] Tagline — josie rewrote ("When songs are so raw they become real.")
+- [x] Bio paragraphs — josie rewrote
 - [ ] The blurb on `src/content/releases/raw.md`
 - [ ] Write your first real song story (copy `src/content/songs/_template.md`)
 

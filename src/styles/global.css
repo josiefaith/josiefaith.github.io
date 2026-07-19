@@ -256,6 +256,12 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
 }
 .teaser h3 { color: var(--iris); margin-bottom: 0.25rem; }
 .teaser .muted { margin: 0; }
+.teaser-art {
+  max-width: 150px;
+  margin-bottom: 1rem;
+  filter: saturate(0.85);
+  opacity: 0.9; /* unreleased = kept slightly behind glass */
+}
 
 /* ——— song story pages ——— */
 
