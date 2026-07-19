@@ -33,7 +33,12 @@ rewrote the tagline and bio in her own voice; public contact is
 jdmusicisme@gmail.com. Launch-day fix: the hero "J" rendered with a glitch —
 cause was manually forcing the font's optical-size axis; removed.
 
+Post-launch polish, all josie-directed: display font swapped to Playfair
+Display (the "J bug" turned out to be Fraunces' intentionally notched J —
+wrong font for a Josie), scratch/ untracked now that the repo is public
+(recorded as a CLAUDE.md delta), home page reworked so the latest album/EP
+headlines and the latest single sits smaller beneath, and "Every song has a
+story."
+
 Remaining worklist lives in TODO.md (YouTube link, link verification, Raw
-blurb, first real song story, someday josiefaith.com). Open question: the
-repo is public, so the tracked scratch/ folder is world-readable — deciding
-whether to untrack it.
+blurb, first real song story, someday josiefaith.com).

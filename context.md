@@ -32,10 +32,11 @@ capital J with an intentional notched serif that reads as a glitch at
 title sizes — not a rendering bug (tested WONK/SOFT/opsz axes; identical).
 Don't bring Fraunces back while the hero word starts with J.
 
-## Open question (privacy)
-The repo is PUBLIC → tracked `scratch/` notes would be world-readable.
-Currently only the README is in there. Recommend untracking scratch as a
-project delta; josie hasn't decided yet — ask before acting.
+## Resolved (privacy)
+josie decided 2026-07-19: `scratch/` is untracked (public repo). Recorded as
+a delta in CLAUDE.md; .gitignore carries the entry. The old scratch/README.md
+remains in pushed git history — contents were only folder conventions,
+nothing private.
 
 ## Next
 - Remaining TODO.md items: YouTube URL, verify streaming links, Raw blurb

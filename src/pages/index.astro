@@ -1,14 +1,24 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import IrisMark from '../components/IrisMark.astro';
 import ReleaseCard from '../components/ReleaseCard.astro';
 import artist from '../data/artist.json';
 
 const released = (await getCollection('releases', (r) => r.data.status === 'released')).sort(
   (a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0)
 );
-const latest = released[0];
-const album = released.find((r) => r.data.featured);
+// The headline slot belongs to the latest album/EP; the latest single rides
+// underneath, smaller and understated.
+const latestAlbum = released.find((r) => r.data.type !== 'single');
+const latestSingle = released.find((r) => r.data.type === 'single');
+const singleLinks = latestSingle
+  ? [
+      ['Spotify', latestSingle.data.links.spotify],
+      ['Apple Music', latestSingle.data.links.apple],
+      ['YouTube', latestSingle.data.links.youtube],
+    ].filter(([, url]) => url)
+  : [];
 
 const now = new Date();
 const nextShow = (await getCollection('shows'))
@@ -47,17 +57,40 @@ const fmtShow = (d: Date) =>
 
   <section class="container">
     <p class="eyebrow">Latest release</p>
-    <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 280px));">
-      <ReleaseCard release={latest} />
-      {album && album.id !== latest.id && <ReleaseCard release={album} />}
-    </div>
+    {latestAlbum && (
+      <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 300px));">
+        <ReleaseCard release={latestAlbum} />
+      </div>
+    )}
+    {latestSingle && (
+      <div class="single-row">
+        <div class="single-thumb">
+          {latestSingle.data.art ? (
+            <img src={`/art/${latestSingle.data.art}`} alt={`${latestSingle.data.title} artwork`} loading="lazy" />
+          ) : (
+            <IrisMark size={22} class="art-placeholder" />
+          )}
+        </div>
+        <div>
+          <p class="small" style="margin: 0;">
+            Latest single — <strong>{latestSingle.data.title}</strong>
+            <span class="muted">{latestSingle.data.date && ` · ${latestSingle.data.date.getFullYear()}`}</span>
+          </p>
+          <div class="platforms small">
+            {singleLinks.map(([label, url]) => (
+              <a href={url} target="_blank" rel="noopener">{label}</a>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
     <p style="margin-top: 1.4rem;"><a href="/music/">All music →</a></p>
   </section>
 
   <section class="container">
     <div class="card" style="padding: clamp(1.6rem, 4vw, 2.6rem);">
       <p class="eyebrow">Behind the songs</p>
-      <h2>Every song has a reason</h2>
+      <h2>Every song has a story</h2>
       <p class="muted" style="max-width: 56ch;">
         I write lyrics first. This is the part of the site where I tell you what the songs are
         actually about — where they came from, what they mean, and the details that don't fit in

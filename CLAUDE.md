@@ -15,6 +15,10 @@ josie (derosajosie@gmail.com).
   uncle Boyd's kit and refer to the human as "Boyd." In this project every such
   reference means josie — apply all of them to me. The shared repo is left
   unmodified by deliberate decision; this delta does the renaming project-side.
+- **`scratch/` is untracked** (diverges from the shared scratch rule's
+  tracked-by-default): this repo is public on GitHub (the website source), so
+  private notes must not be committed. Decided by josie 2026-07-19. Never
+  "fix" this back to tracked.
 
 ## Working rules
 

@@ -247,6 +247,32 @@ section { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
   letter-spacing: 0.04em;
 }
 
+/* latest single: an understated strip below the headline album/EP */
+.single-row {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  margin-top: 1.2rem;
+  max-width: 420px;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: transparent;
+}
+.single-thumb {
+  flex: 0 0 56px;
+  width: 56px;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(150deg, var(--surface-2) 0%, var(--plum, #4c3a6e) 120%);
+  border: 1px solid var(--line);
+}
+.single-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 /* ——— what's-next teaser strip ——— */
 
 .teaser-strip {
