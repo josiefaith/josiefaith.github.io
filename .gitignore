@@ -32,3 +32,4 @@ dist/
 # /scratch untracked by deliberate delta (2026-07-19): the repo is public,
 # so josie's private notes must not be pushed. See CLAUDE.md "Project deltas".
 /scratch/
+__pycache__/
