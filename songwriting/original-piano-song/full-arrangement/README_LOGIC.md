@@ -24,7 +24,9 @@ shaker/tambourine track. The piano part is the original, unchanged note for note
 | `bass_only.mid` | Bass only |
 | `organ_only.mid` | Organ only |
 | `aux_percussion_only.mid` | Shaker & tambourine only |
+| `chord_guide.mid` | Plain block chords for filling Logic's Chord Track (see below). Not meant to be heard |
 | `drum_map.md` | Which note number is which drum, and how loud things are |
+| `generate_chord_guide.py` | Rebuilds `chord_guide.mid` |
 | `generate_arrangement.py` | Rebuilds everything (`pip install mido`, then `python3 generate_arrangement.py`) |
 | `validate_arrangement.py` | Re-checks all the files |
 
@@ -130,6 +132,20 @@ Two chords written in one bar change on beat 3.
 | 57–64 | Final Chorus | same as Chorus 1 |
 | 65–72 | Final Chorus (pull-back + lift) | same as Chorus 2 |
 | 73–80 | Outro | Ebmaj9 · Bb/D · Abmaj7/C · Abm6/Cb · Ebmaj9/Bb · Ab/Bb · Ebmaj9 · Ebmaj9 |
+
+## Getting the chord symbols into Logic (Chord Track)
+
+MIDI files can't carry Logic chord symbols. `chord_guide.mid` lets Logic work them out.
+It holds every chord spelled plainly, with the bass note underneath. You need Logic Pro 11 or later; menu names may vary slightly.
+
+1. **File → Import → MIDI File…** → `chord_guide.mid`. Skip importing tempo, because it's identical anyway.
+   You get a track called **Chord Guide (mute me)**. Make sure its region starts at bar 1.
+2. Show the Chord Track: **Track → Global Tracks → Show Chord Track** (or press **G**).
+3. **Option-drag** the Chord Guide region up onto the Chord Track (Option makes a copy). Logic analyzes it
+   and fills in the chords.
+4. **Mute** the Chord Guide track (**M**) or delete it.
+5. Spot-check a few bars against the table above. Logic may simplify extended chords (e.g. Gm11 → Gm7)
+   or write some chords differently. Double-click any chord on the Chord Track to fix it.
 
 ## Who plays what, section by section
 
