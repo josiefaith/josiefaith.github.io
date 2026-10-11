@@ -63,7 +63,6 @@ def spell(chord):
 track = MidiTrack()
 track.append(MetaMessage('track_name', name='Chord Guide (mute me)'))
 track.append(Message('program_change', channel=4, program=0))
-track.append(Message('control_change', channel=4, control=7, value=90))
 events, bar = [], 1
 for _, _, chords, _, _ in FORM:
     for bc in chords:

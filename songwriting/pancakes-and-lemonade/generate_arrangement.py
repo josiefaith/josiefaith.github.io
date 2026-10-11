@@ -658,7 +658,8 @@ for k in parts:
     parts[k] = tidy(parts[k])
 
 # ---------- 8. write MIDI ----------
-TRACKS = {  # key: (track name, channel 0-based, GM program 0-based, volume, pan)
+TRACKS = {  # key: (track name, channel 0-based, GM program 0-based, suggested fader %, pan) - the last two are
+          # only documented in README_LOGIC.md, never written into the MIDI
     'drums': ('Drums', 9, 0, 100, 64),
     'bass': ('Bass', 1, 33, 100, 64),
     'organ': ('Organ', 2, 16, 84, 76),
@@ -673,10 +674,11 @@ def build_track(key):
     tr = MidiTrack()
     head = [MetaMessage('track_name', name=name),
             MetaMessage('instrument_name', name=INSTR[key]),
-            Message('program_change', channel=ch, program=prog),
-            Message('control_change', channel=ch, control=7, value=vol),
-            Message('control_change', channel=ch, control=10, value=pan),
-            Message('control_change', channel=ch, control=11, value=100 if key != 'organ' else 70)]
+            Message('program_change', channel=ch, program=prog)]
+    # No volume (CC7) or pan (CC10) messages: Logic would lock its faders to them.
+    # The organ keeps CC11 (expression) for its swells; that doesn't touch the fader.
+    if key == 'organ':
+        head.append(Message('control_change', channel=ch, control=11, value=70))
     ev = []
     for t0, p, d, v in parts[key]:
         ev.append((t0, 2, Message('note_on', channel=ch, note=p, velocity=v)))

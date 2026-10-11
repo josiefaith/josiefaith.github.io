@@ -442,9 +442,8 @@ piano = MidiTrack()
 mid.tracks.append(piano)
 pev = [(0, MetaMessage('track_name', name='Grand Piano')),
        (0, MetaMessage('instrument_name', name='Acoustic Grand Piano')),
-       (0, Message('program_change', channel=0, program=0)),
-       (0, Message('control_change', channel=0, control=7, value=100)),
-       (0, Message('control_change', channel=0, control=10, value=64))]
+       (0, Message('program_change', channel=0, program=0))]
+# no CC7/CC10: Logic would lock the track's volume and pan faders to them
 # order key: note-offs (0) before pedal (1) before note-ons (2) at the same tick
 for t, p, d, v in notes:
     pev.append((t, 2, Message('note_on', channel=0, note=p, velocity=v)))
@@ -454,7 +453,7 @@ for t, val in sorted(pedal):
     if val != last:
         pev.append((t, 1, Message('control_change', channel=0, control=64, value=val)))
         last = val
-head, body = pev[:5], sorted(pev[5:], key=lambda e: (e[0], e[1]))
+head, body = pev[:3], sorted(pev[3:], key=lambda e: (e[0], e[1]))
 
 
 def write(track, events, end):

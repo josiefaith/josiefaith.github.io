@@ -78,6 +78,9 @@ for tr in full.tracks[1:]:
     check(all(0 <= s < e <= END for s, e, _, _ in ns), f'{tr.name:<20} all notes inside bars 1-{BARS}')
     check(min(e - s for s, e, _, _ in ns) >= 25, f'{tr.name:<20} note lengths >= 25 ticks')
 
+fader_ccs = [(tr.name, m.control) for tr in full.tracks for m in tr
+             if m.type == 'control_change' and m.control in (7, 10)]
+check(not fader_ccs, f'no volume (CC7) or pan (CC10) messages, so Logic faders stay free ({len(fader_ccs)} found)')
 check([m for m in full.tracks[1]] == [m for m in orig.tracks[1]], 'piano track identical to piano_only.mid, event for event')
 check([m for m in full.tracks[0]] == [m for m in orig.tracks[0]], 'tempo/meter/marker track identical to piano_only.mid')
 

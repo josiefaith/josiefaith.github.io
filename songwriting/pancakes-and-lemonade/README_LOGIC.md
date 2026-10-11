@@ -41,7 +41,7 @@ Version 2 of the arrangement, rebuilt around your lyrics. The first version is s
 | `lead_sheet.html` | Chords by bar with your lyrics |
 | `drum_map.md` | Every drum note and what the drums do in each section |
 | `generate_piano.py`, `generate_arrangement.py`, `generate_chord_guide.py`, `generate_lead_sheet.py` | Rebuild everything (`pip install mido`) |
-| `validate_arrangement.py` | Re-checks the files (49 checks) |
+| `validate_arrangement.py` | Re-checks the files (50 checks) |
 
 ## Tracks
 
@@ -61,6 +61,19 @@ Version 2 of the arrangement, rebuilt around your lyrics. The first version is s
    **D1** (snare), **F#1** (closed hi-hat).
 4. A track is silent? Use **Track → New Software Instrument Track**, drag the region onto it,
    load the sound, and delete the old track.
+
+### Volume faders
+These files contain **no volume or pan messages**, so every fader and pan knob in Logic is
+yours to move. (Earlier downloads did contain them, and Logic kept snapping the faders back on
+play. If that happens, you have an old file. Re-import the current one, or see the fix below.)
+
+Starting levels that should be close: Piano 0 dB, Bass −3 dB, Drums −3 dB, Organ −9 dB,
+Shaker & Tambourine −12 dB (pan it a little left). Then set them by ear around your vocal.
+
+**Fixing an old region that still locks the fader:** select the region, open the **Event List**
+(press **E**, or View → Show List Editors → Event). Find the lines marked **Control** with number
+**7** (volume) and **10** (pan), select them and press Delete. Leave **64** (sustain pedal) and,
+on the organ, **11** (swells).
 
 ### Moving this into your current session
 You already rebuilt the structure in your own session. To try my parts there instead of
@@ -95,7 +108,7 @@ and the new verse at bars 13–20.
 
 ## What was verified and what wasn't
 
-**Verified by script** (all 49 checks pass):
+**Verified by script** (all 50 checks pass):
 - The files are valid Type 1 MIDI with 6 named tracks; the drum tracks are on channel 10.
 - The tempo, meter and markers are the same on every track and file.
 - No notes are stuck on, and every track ends exactly at the end of bar 88 (3:40.5).
