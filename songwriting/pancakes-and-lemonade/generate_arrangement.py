@@ -6,9 +6,9 @@ Reads (never writes):
   generate_piano.py     the chord chart and section list (read as data)
 
 Writes, next to this script:
-  full_song_multitrack.mid   Type 1: Tempo & Meter, Grand Piano, Drums (Brushes),
-                             Drums (Sticks), Bass, Organ, Shaker & Tambourine
-  drums_only.mid             both drum tracks
+  full_song_multitrack.mid   Type 1: Tempo & Meter, Grand Piano, Drums, Bass, Organ,
+                             Shaker & Tambourine
+  drums_only.mid             the drum track
   bass_only.mid, organ_only.mid, aux_percussion_only.mid
   drum_map.md                every drum note used, with velocity conventions
 
@@ -85,7 +85,7 @@ DRUM_NAMES = {KICK: 'Acoustic Bass Drum / Kick', SIDESTICK: 'Side Stick (cross-s
               TOM_HIGH: 'Hi-Mid Tom', CRASH: 'Crash Cymbal 1', RIDE: 'Ride Cymbal 1',
               RIDE_BELL: 'Ride Bell', TAMBOURINE: 'Tambourine', SHAKER: 'Shaker'}
 
-parts = {k: [] for k in ('brushes', 'drums', 'bass', 'organ', 'aux')}   # (tick, note, dur, vel)
+parts = {k: [] for k in ('drums', 'bass', 'organ', 'aux')}   # (tick, note, dur, vel)
 ccs = {k: [] for k in parts}                                 # (tick, controller, value)
 
 
@@ -155,173 +155,60 @@ def backbeat(bar, v, note=SNARE, positions=(4, 12)):
         hit('drums', bar, p, note, v)
 
 
-# Bars on brushes: everything up to the end of verse 3, the pulled-back chorus, the outro.
-BRUSH_SECTIONS = {'Intro', 'Verse 1', 'Verse 2', 'Pre-Chorus 1', 'Chorus 1', 'Turnaround', 'Verse 3', 'Outro'}
-BRUSH_BARS = set()
-for _s in SECTIONS:
-    for _i in range(len(_s['chords'])):
-        if _s['name'] in BRUSH_SECTIONS or (_s['style'] == 'lift' and _i < 4):
-            BRUSH_BARS.add(_s['start'] + _i)
-
-
-def sweep(bar, lv, step=2, until=16, skip=()):
-    """Soft brush strokes on the snare between the backbeats (the 'swish' of a brush groove)."""
-    for pos in range(0, until, step):
-        if pos in (4, 12) or pos in skip:
-            continue
-        v = lv - 28 if pos % 4 == 0 else (lv - 32 if pos % 2 == 0 else lv - 40)
-        hit('brushes', bar, pos, SNARE, max(20, v), jitter=5)
-
-
-def bkick(bar, positions, lv):
-    for p in positions:
-        hit('brushes', bar, p, KICK, lv if p in (0, 8) else lv - 10)
-
-
-def btap(bar, lv, positions=(4, 12)):
-    for p in positions:
-        hit('brushes', bar, p, SNARE, lv)
-
-
-def foot(bar, lv, positions=(4, 12)):
-    for p in positions:
-        hit('brushes', bar, p, HH_PEDAL, lv)
-
-
-def brushes_for(sec, i, bar):
-    st, name, n = sec['style'], sec['name'], len(sec['chords'])
-    two = len(chords_of(bar)) == 2
-    last = i == n - 1
-
-    if st == 'intro':                                  # piano alone for two bars, then a whisper
-        if i == 2:
-            bkick(bar, [0], 46)
-            sweep(bar, 52)
-        elif i == 3:
-            sweep(bar, 54, until=12)
-            for pos, v in ((12, 36), (14, 46), (15, 54)):
-                hit('brushes', bar, pos, SNARE, v)
-
-    elif name == 'Verse 1':                            # the lightest groove in the song
-        lv = 56
-        bkick(bar, [0, 6, 8] if two else [0, 6], lv + 6)
-        btap(bar, lv)
-        foot(bar, lv - 18)
-        if last:
-            sweep(bar, lv, until=14)
-            hit('brushes', bar, 14, SNARE, lv - 14)
-            hit('brushes', bar, 15, SNARE, lv - 8)
-        else:
-            sweep(bar, lv)
-
-    elif name == 'Verse 2':                            # same feel, 16th strokes, kick pickups
-        lv = 60
-        bkick(bar, [0, 6, 8, 14] if two else ([0, 6, 10] if i % 2 else [0, 6]), lv + 6)
-        btap(bar, lv)
-        foot(bar, lv - 18)
-        if last:
-            sweep(bar, lv, step=1, until=12)
-            for pos, v in ((13, 44), (14, 52), (15, 60)):
-                hit('brushes', bar, pos, SNARE, v)
-        else:
-            sweep(bar, lv, step=1)
-
-    elif st == 'pre':                                  # pre-chorus 1, still brushes, building
-        lv = 62 + 4 * i
-        if not last:
-            bkick(bar, [0, 6, 8], lv + 6)
-            btap(bar, lv + 2)
-            sweep(bar, lv, step=1 if i else 2)
-            if i >= 1:
-                for pos in range(0, 16, 2):
-                    hit('brushes', bar, pos, HH_CLOSED, lv - (20 if pos % 4 == 0 else 30))
-        else:                                          # stop on beat 4 with the piano's breath
-            bkick(bar, [0, 6, 8, 12], lv + 6)
-            btap(bar, lv + 2, (4,))
-            sweep(bar, lv, step=1, until=11)
-            hit('brushes', bar, 12, SNARE, lv + 10)
-            hit('brushes', bar, 15, SNARE, 46)
-
-    elif st == 'chorus_light':                         # chorus 1: a lift, not a wall
-        lv = 68 + (3 if i % 4 == 0 else 0)
-        if i == 0:
-            hit('brushes', bar, 0, CRASH, 54, dur16=8)
-        if last:
-            bkick(bar, [0, 6], lv + 4)
-            btap(bar, lv, (4,))
-            hit('brushes', bar, 12, SNARE, 48)
-            sweep(bar, lv - 4, until=10)
-            return
-        kp = [0, 6, 8, 14] if two else [0, 6, 8] + ([11] if i % 2 else [])
-        bkick(bar, kp, lv + 6)
-        btap(bar, lv)
-        sweep(bar, lv, step=1)
-        foot(bar, lv - 20)
-        for p in (0, 4, 8, 12):
-            if not (i == 0 and p == 0):
-                hit('brushes', bar, p, RIDE, lv - 22)
-
-    elif st == 'turn':
-        bkick(bar, [0] if i == 0 else [0, 10], 56)
-        btap(bar, 52, (12,) if i == 0 else (4, 12))
-        sweep(bar, 52)
-
-    elif st == 'verse2':                               # verse 3: busiest brush groove, shaker joins
-        lv = 60 + i
-        if two:
-            bkick(bar, [0, 6, 8, 14], lv + 6)
-        else:
-            bkick(bar, [0, 6, 10, 14] if i % 2 else [0, 6, 10], lv + 6)
-        btap(bar, lv + 2)
-        foot(bar, lv - 18)
-        if last:                                       # swell into the sticks at pre-chorus 2
-            sweep(bar, lv, step=1, until=8)
-            for pos in range(8, 16):
-                hit('brushes', bar, pos, SNARE, 40 + (pos - 8) * 6, jitter=2)
-        else:
-            sweep(bar, lv, step=1)
-
-    elif st == 'lift':                                 # the stripped-down chorus: half-time brushes
-        bkick(bar, [0], 50)
-        hit('brushes', bar, 8, SNARE, 52)
-        foot(bar, 34, (0, 4, 8, 12))
-        if i == 3:                                     # sticks come back with the fill
-            sweep(bar, 50, until=8, skip=(8,))
-            for pos, note, v in [(8, SNARE, 62), (10, SNARE, 72), (12, TOM_HIGH, 82),
-                                 (13, TOM_HIGH, 86), (14, TOM_LOW, 92), (15, TOM_FLOOR, 102)]:
-                hit('drums', bar, pos, note, v, jitter=3)
-            hit('drums', bar, 12, KICK, 80)
-        else:
-            sweep(bar, 50, skip=(8,))
-
-    elif st == 'outro':
-        lv = 56 - 3 * i
-        if i < 4:
-            bkick(bar, [0], lv + 4)
-            btap(bar, lv)
-            foot(bar, lv - 16)
-            sweep(bar, lv)
-        elif i < 6:
-            bkick(bar, [0], lv)
-            sweep(bar, lv + 4)
-        elif i == 6:
-            bkick(bar, [0], lv)
-            sweep(bar, lv + 4, until=10)
-        else:                                          # last downbeat: everyone lands together
-            hit('brushes', bar, 0, KICK, 58, jitter=0)
-            hit('brushes', bar, 0, RIDE, 50, dur16=16, jitter=0)
-
-
 def drums_for(sec, i, bar):
-    if bar in BRUSH_BARS:
-        brushes_for(sec, i, bar)
-        return
     st, n = sec['style'], len(sec['chords'])
+    light = st == 'chorus_light'                      # chorus 1: the version-1 groove, played softer
+    if light:
+        st = 'chorus'
     two = len(chords_of(bar)) == 2
     last = i == n - 1
     name = sec['name']
 
-    if st == 'pre':                                 # real snare arrives, hats tighten, crescendo
+    if st == 'intro':
+        if i == 2:
+            kicks(bar, [0], 52)
+            hats(bar, 44)
+        elif i == 3:
+            hats(bar, 46, until=12)
+            hit('drums', bar, 12, SNARE, 38)
+            hit('drums', bar, 14, SNARE, 48)
+            hit('drums', bar, 15, SNARE, 56)
+
+    elif st == 'verse':                               # restrained: cross-stick, kick locks to piano LH
+        lv = 60 + i + (3 if name == 'Verse 2' else 0)
+        kicks(bar, [0, 6, 8] if two else ([0, 6, 10] if i % 2 else [0, 6]), lv + 16)
+        backbeat(bar, lv + 10, SIDESTICK)
+        if name == 'Verse 2' and i % 2:
+            hit('drums', bar, 15, SNARE, 26)
+            if not two:
+                kicks(bar, [14], lv + 2)
+        if last:
+            hats(bar, lv, skip=(14,))
+            hit('drums', bar, 14, HH_OPEN, lv - 4, dur16=2)
+        else:
+            hats(bar, lv)
+
+    elif st == 'turn':
+        kicks(bar, [0] if i == 0 else [0, 10], 66)
+        backbeat(bar, 56, SIDESTICK, (12,) if i == 0 else (4, 12))
+        hats(bar, 48)
+
+    elif st == 'verse2':                              # same family, more motion: 16th hats, ghosts, pickups
+        lv = 62 + i
+        if two:
+            kicks(bar, [0, 6, 8, 14], lv + 14)
+        else:
+            kicks(bar, [0, 6, 10, 14] if i % 2 else [0, 6, 10], lv + 14)
+        backbeat(bar, lv + 10, SIDESTICK)
+        hit('drums', bar, 7 if i % 2 else 15, SNARE, 28)
+        if last:
+            hats(bar, lv - 4, step=1, until=13)
+            hit('drums', bar, 14, HH_OPEN, lv - 2, dur16=2)
+            hit('drums', bar, 15, SNARE, 46)
+        else:
+            hats(bar, lv - 4, step=1)
+
+    elif st == 'pre':                                 # real snare arrives, hats tighten, crescendo
         lv = 66 + 6 * i + (6 if name.endswith('2') else 0)
         if not last:
             kicks(bar, [0, 6, 8], lv + 10)
@@ -344,7 +231,7 @@ def drums_for(sec, i, bar):
     elif st in ('chorus', 'final') or (st == 'lift' and i >= 4):
         big = st != 'chorus'
         second = name == 'Chorus 2'
-        lv = (96 if big else 84) + (6 if second else 0) + (i % 4 == 0) * 4
+        lv = (96 if big else 84) + (6 if second else 0) + (i % 4 == 0) * 4 - (12 if light else 0)
         crash = (i in (0, 4)) if st != 'lift' else i == 4
         if crash:
             hit('drums', bar, 0, CRASH, lv + 14, dur16=8)
@@ -429,6 +316,34 @@ def drums_for(sec, i, bar):
                 hit('drums', bar, pos, SNARE, 46 + (pos - 8) * 9, jitter=2)
             kicks(bar, [8, 12], 92)
 
+    elif st == 'lift':                                # the pulled-back chorus (bars 73-76)
+        kicks(bar, [0], 56)
+        hit('drums', bar, 8, SIDESTICK, 52)
+        for p in (0, 4, 8, 12):
+            hit('drums', bar, p, HH_PEDAL, 38)
+        if i == 3:
+            for pos, note, v in [(8, SNARE, 62), (10, SNARE, 72), (12, TOM_HIGH, 82),
+                                 (13, TOM_HIGH, 86), (14, TOM_LOW, 92), (15, TOM_FLOOR, 102)]:
+                hit('drums', bar, pos, note, v, jitter=3)
+            kicks(bar, [12], 80)
+
+    elif st == 'outro':
+        lv = 58 - 3 * i
+        if i < 4:
+            kicks(bar, [0], lv + 6)
+            backbeat(bar, lv, SIDESTICK)
+            hats(bar, lv - 10)
+        elif i < 6:
+            kicks(bar, [0], lv)
+            for p in (0, 4, 8, 12):
+                hit('drums', bar, p, RIDE, lv - 8)
+        elif i == 6:
+            kicks(bar, [0], lv)
+            hit('drums', bar, 0, RIDE, lv - 6)
+            hit('drums', bar, 8, RIDE, lv - 12)
+        else:                                         # last downbeat: everyone lands together
+            hit('drums', bar, 0, KICK, 64)
+            hit('drums', bar, 0, CRASH, 62, dur16=16)
 
 
 # ---------- 4. shaker & tambourine (also channel 10, own track) ----------
@@ -706,12 +621,20 @@ def organ_for(sec, i, bar):
 
 
 # ---------- 7. render every bar ----------
+_main = random.getstate()
+random.seed(7700)
+_drum_rng = random.getstate()
+random.setstate(_main)
 for sec in SECTIONS:
     lv0, lv1 = BASS_LEVEL[sec['name']]
     n = len(sec['chords'])
     for i in range(n):
         bar = sec['start'] + i
+        _main = random.getstate()                     # drums use their own random stream, so
+        random.setstate(_drum_rng)                    # editing them never shifts the other parts
         drums_for(sec, i, bar)
+        _drum_rng = random.getstate()
+        random.setstate(_main)
         aux_for(sec, i, bar)
         bass_for(sec, i, bar, lv0 + (lv1 - lv0) * i / max(1, n - 1))
         organ_for(sec, i, bar)
@@ -736,13 +659,12 @@ for k in parts:
 
 # ---------- 8. write MIDI ----------
 TRACKS = {  # key: (track name, channel 0-based, GM program 0-based, volume, pan)
-    'brushes': ('Drums (Brushes)', 9, 40, 100, 64),
-    'drums': ('Drums (Sticks)', 9, 0, 100, 64),
+    'drums': ('Drums', 9, 0, 100, 64),
     'bass': ('Bass', 1, 33, 100, 64),
     'organ': ('Organ', 2, 16, 84, 76),
     'aux': ('Shaker & Tambourine', 9, 0, 80, 50),
 }
-INSTR = {'brushes': 'Brush Kit (GM channel 10)', 'drums': 'Standard Drum Kit (GM channel 10)', 'bass': 'Electric Bass (finger)',
+INSTR = {'drums': 'Standard Drum Kit (GM channel 10)', 'bass': 'Electric Bass (finger)',
          'organ': 'Drawbar Organ', 'aux': 'Percussion (GM channel 10)'}
 
 
@@ -795,57 +717,47 @@ def save(path, tracks):
 
 
 full = save('full_song_multitrack.mid', [copy_track(orig.tracks[1])] +
-            [band[k] for k in ('brushes', 'drums', 'bass', 'organ', 'aux')])
-save('drums_only.mid', [band['brushes'], band['drums']])
+            [band[k] for k in ('drums', 'bass', 'organ', 'aux')])
+save('drums_only.mid', [band['drums']])
 save('bass_only.mid', [band['bass']])
 save('organ_only.mid', [band['organ']])
 save('aux_percussion_only.mid', [band['aux']])
 
 # ---------- 9. drum map documentation (generated so it always matches the file) ----------
-cnt = {k: Counter(p for _, p, _, _ in parts[k]) for k in ('brushes', 'drums', 'aux')}
+cnt = {k: Counter(p for _, p, _, _ in parts[k]) for k in ('drums', 'aux')}
 NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 lines = ['# Drum map: Pancakes and Lemonade', '',
-         'All three percussion tracks use **MIDI channel 10** and the **General MIDI percussion map**.',
-         'Logic calls middle C (note 60) **C3**, so note 36 shows up as **C1** in the Piano Roll.', '',
-         '- **Drums (Brushes)**: bars ' + ', '.join(f'{a}-{b}' for a, b in (
-             (min(g), max(g)) for g in [[x for x in sorted(BRUSH_BARS) if x <= 42],
-                                        [x for x in sorted(BRUSH_BARS) if 43 <= x <= 80],
-                                        [x for x in sorted(BRUSH_BARS) if x > 80]] if g)) +
-         '. Load a brush kit on this track.',
-         '- **Drums (Sticks)**: everything else (pre-chorus 2 to the end of the final chorus, except the pulled-back bars). Load a normal acoustic kit.',
-         '- **Shaker & Tambourine**: optional, verse 3 onward.', '',
-         'The brush part uses the same note numbers as a stick kit (snare = 38, kick = 36, hi-hat foot = 44).',
-         'With a brush kit loaded, those notes play brush sounds. The soft, constant snare notes are the "swish"',
-         'between backbeats. With a stick kit they just sound like very light playing.', '',
-         '| MIDI note | Logic name | Instrument | Brushes | Sticks | Shaker & Tamb. |',
-         '|---:|:---:|---|---:|---:|---:|']
+         'Both percussion tracks ("Drums" and "Shaker & Tambourine") use **MIDI channel 10** and the',
+         '**General MIDI percussion map**, the same as version 1. Logic calls middle C (note 60) **C3**, so note 36',
+         'shows up as **C1** in the Piano Roll.', '',
+         '| MIDI note | Logic name | Instrument | Drums | Shaker & Tamb. |', '|---:|:---:|---|---:|---:|']
 for note in sorted(DRUM_NAMES):
-    if any(cnt[k][note] for k in cnt):
+    if cnt['drums'][note] or cnt['aux'][note]:
         lines.append(f'| {note} | {NAMES[note % 12]}{note // 12 - 2} | {DRUM_NAMES[note]} | '
-                     f'{cnt["brushes"][note]} | {cnt["drums"][note]} | {cnt["aux"][note]} |')
+                     f'{cnt["drums"][note]} | {cnt["aux"][note]} |')
 lines += ['', '## Velocity conventions', '',
           '| Range | Meaning | Where it appears |', '|---|---|---|',
-          '| 14–40 | Ghost notes / brush strokes | the soft snare swish under the brushes, 16th hats, shaker off-beats |',
-          '| 40–65 | Soft | brush backbeats in the verses, intro, outro, the pulled-back chorus |',
-          '| 65–95 | Normal | chorus 1 brushes, stick grooves in pre-chorus 2 and chorus 2 |',
+          '| 20–40 | Ghost notes | quiet snare taps, soft 16th hats, shaker off-beats |',
+          '| 40–65 | Soft / restrained | intro hats, verse cross-stick, half-time bridge ride, outro |',
+          '| 65–95 | Normal playing | verse kick, chorus snare, hats and ride |',
           '| 95–120 | Accents | crashes, final-chorus backbeats, fill peaks |', '',
-          'Timing drifts by at most ±5 ticks (about 1/100 of a beat). Downbeats are never early.', '',
-          '## Where things happen', '',
-          '- **Intro (1-4):** piano alone for two bars, then a soft brush swish and a pickup.',
-          '- **Verse 1 (5-12):** lightest groove: brush taps on 2 and 4, kick on 1 and the "and" of 2, hi-hat foot.',
-          '- **Verse 2 (13-20):** same feel with 16th-note brush strokes and a few kick pickups.',
-          '- **Pre-Chorus 1 (21-24):** builds, brushed hi-hat joins, stops on beat 4 of bar 24 with the piano.',
-          '- **Chorus 1 (25-32):** still brushes: brushed ride, fuller kick. A lift, not a wall.',
-          '- **Turnaround (33-34):** very light.',
-          '- **Verse 3 (35-42):** busiest brush groove, shaker joins; swells into the sticks.',
-          '- **Pre-Chorus 2 (43-46):** sticks come in, ending with a tom fill.',
-          '- **Chorus 2 (47-54):** first full-band chorus: ride cymbal, crash, shaker.',
+          'Timing drifts by at most ±4 ticks. Downbeats are never early.', '',
+          '## Where things happen (version 1 drums, fitted to 88 bars)', '',
+          '- **Intro (1-4):** no drums for two bars, soft hats from bar 3, snare pickup.',
+          '- **Verse 1 (5-12):** kick on 1 and the "and" of 2, cross-stick on 2 and 4, 8th-note hats.',
+          '- **Verse 2 (13-20):** the same groove with an occasional ghost note and kick pickup.',
+          '- **Pre-Chorus 1 (21-24):** full snare, building; the band stops on beat 4 of bar 24.',
+          '- **Chorus 1 (25-32):** the version-1 chorus groove (hats, crash, fuller kick), played softer.',
+          '- **Turnaround (33-34):** kick, cross-stick, hats.',
+          '- **Verse 3 (35-42):** 16th hats, ghost snares, kick pickups; shaker joins.',
+          '- **Pre-Chorus 2 (43-46):** builds to a tom fill.',
+          '- **Chorus 2 (47-54):** ride cymbal, fuller, shaker; fill drops into the bridge.',
           '- **Bridge (55-62):** half-time, then climbs to a snare roll.',
           '- **Breakdown (63-64):** one crash, near silence, snare crescendo.',
-          '- **Final Chorus (65-72):** the biggest groove, tambourine on 2 and 4.',
-          '- **Pull-back (73-76):** back to brushes, half-time; sticks return with a tom fill in bar 76.',
+          '- **Final Chorus (65-72):** strongest groove, tambourine on 2 and 4.',
+          '- **Pull-back (73-76):** kick, cross-stick on beat 3, hi-hat foot, then a tom fill.',
           '- **Lift (77-80):** full band.',
-          '- **Outro (81-88):** brushes fade out; last kick and brushed ride on the final downbeat.']
+          '- **Outro (81-88):** cross-stick, then ride only, then one soft kick + crash on the last downbeat.']
 open(os.path.join(HERE, 'drum_map.md'), 'w').write('\n'.join(lines) + '\n')
 
 print(f'wrote {len(TRACKS) + 1} instrument tracks, {full.length:.2f} s, {TOTAL_BARS} bars')

@@ -16,10 +16,10 @@ for node in ast.parse(open(SRC).read()).body:
 
 # performance cues by bar (what the band does, where the singer breathes)
 CUES = {
-    1: 'piano hook', 3: 'brushes enter', 24: 'band stops on 4', 25: 'brushes, light',
-    33: 'piano hook', 35: 'shaker', 43: 'sticks in', 46: 'tom fill', 47: 'full band',
+    1: 'piano hook', 3: 'drums enter', 24: 'band stops on 4', 25: 'light',
+    33: 'piano hook', 35: 'shaker', 46: 'tom fill', 47: 'full band',
     54: 'fill', 55: 'half-time', 59: 'build', 63: 'drop out', 64: 'build', 65: 'biggest',
-    73: 'pull back, brushes', 76: 'fill', 77: 'full band', 81: 'brushes', 87: 'rit.', 88: 'hold',
+    73: 'pull back', 76: 'fill', 77: 'full band', 87: 'rit.', 88: 'hold',
 }
 
 # Lyrics by bar, placed from josie's chord sheet. A pair splits a two-chord bar (second half = beat 3).
@@ -52,11 +52,10 @@ for start, lines in [
     for k, line in enumerate(lines):
         LYRICS[start + k] = line
 NOTES = {
-    'Chorus 1': 'Held chords, brushes: the big chorus waits',
-    'Pre-Chorus 2': 'Sticks replace brushes',
+    'Chorus 1': 'Held chords, softer drums: the big chorus waits',
     'Bridge': 'Key change: G♭ major',
     'Breakdown': 'Back toward E♭',
-    'Final Chorus (pull-back + lift)': 'Bars 73–76 quiet on brushes, 77–80 loudest',
+    'Final Chorus (pull-back + lift)': 'Bars 73–76 quiet, 77–80 loudest',
 }
 
 
@@ -182,7 +181,7 @@ h2 {{ font-family: var(--display); font-weight: 500; font-size: 21px; margin: 0;
   {"".join(blocks)}
   <div class="legend">
     <p><strong>Feel:</strong> mid-tempo, straight 16ths. The piano hook plays in bars 1–4 and comes back in the turnaround (33) and breakdown (63), where the vocal rests.</p><p><strong>Lyrics:</strong> placed from your chord sheet, roughly where each word lands. Where a box shows two chords, the second line of words starts around beat 3.</p>
-    <p><strong>Notes in orange:</strong> what the band does: brushes or sticks, stops, fills, pull-backs. The tempo slows over bars 87–88.</p>
+    <p><strong>Notes in orange:</strong> what the band does: stops, fills, pull-backs. The tempo slows over bars 87–88.</p>
   </div>
 </main>
 '''

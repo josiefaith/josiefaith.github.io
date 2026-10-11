@@ -43,7 +43,7 @@ END = BARS * BAR
 print('== full_song_multitrack.mid ==')
 check(full.type == 1, f'Standard MIDI File type {full.type}')
 names = [t.name for t in full.tracks]
-check(names == ['Tempo & Meter', 'Grand Piano', 'Drums (Brushes)', 'Drums (Sticks)', 'Bass', 'Organ', 'Shaker & Tambourine'],
+check(names == ['Tempo & Meter', 'Grand Piano', 'Drums', 'Bass', 'Organ', 'Shaker & Tambourine'],
       f'{len(names)} tracks: {names}')
 check(PPQ == 480, f'{PPQ} PPQ')
 
@@ -63,7 +63,7 @@ check(tempos[0] == (1, 96.0) and len(tempos) == 5, f'tempo map (bar, BPM): {temp
 check(marks == [1, 5, 13, 21, 25, 33, 35, 43, 47, 55, 63, 65, 73, 81], f'section markers at bars {marks}')
 check(215 <= full.length <= 225, f'duration {full.length:.2f} s ({int(full.length // 60)}:{full.length % 60:05.2f})')
 
-EXPECT = {'Grand Piano': ({0}, 0), 'Drums (Brushes)': ({9}, 40), 'Drums (Sticks)': ({9}, 0), 'Bass': ({1}, 33), 'Organ': ({2}, 16),
+EXPECT = {'Grand Piano': ({0}, 0), 'Drums': ({9}, 0), 'Bass': ({1}, 33), 'Organ': ({2}, 16),
           'Shaker & Tambourine': ({9}, 0)}
 data = {}
 for tr in full.tracks[1:]:
@@ -82,7 +82,7 @@ check([m for m in full.tracks[1]] == [m for m in orig.tracks[1]], 'piano track i
 check([m for m in full.tracks[0]] == [m for m in orig.tracks[0]], 'tempo/meter/marker track identical to piano_only.mid')
 
 GM = {36, 37, 38, 42, 43, 44, 45, 46, 48, 49, 51, 53, 54, 82}
-drums = data['Drums (Brushes)'] + data['Drums (Sticks)']
+drums = data['Drums']
 check({p for *_, p, _ in drums} <= GM, f'drum notes all in documented GM map: {sorted({p for *_, p, _ in drums})}')
 check({p for *_, p, _ in data['Shaker & Tambourine']} <= {54, 82}, 'aux track uses only tambourine 54 / shaker 82')
 dv = [v for *_, v in drums]
@@ -91,7 +91,7 @@ bp = [p for *_, p, _ in data['Bass']]
 check(28 <= min(bp) and max(bp) <= 55, f'bass range {min(bp)}-{max(bp)} (4-string E1-G3 = 28-55)')
 
 # every instrument ends together on the last downbeat
-for nm in ('Grand Piano', 'Drums (Brushes)', 'Bass', 'Organ'):
+for nm in ('Grand Piano', 'Drums', 'Bass', 'Organ'):
     last_on = max(s for s, *_ in data[nm])
     check(last_on // BAR + 1 == BARS, f'{nm:<20} last note starts in the last bar')
 check(max(e for nm in data for _, e, _, _ in data[nm]) == END, f'final notes end exactly at the end of bar {BARS} (no trailing silence)')
@@ -148,17 +148,12 @@ for k, (a, b) in enumerate(zip(sec_bounds, sec_bounds[1:])):
         row.append(f'{c / (b - a):9.1f}')
     print(f'  {labels[k][:34]:<34}' + ''.join(row))
 
-# brushes and sticks never play at the same time (bar 76 hands over mid-bar)
-bb = {s // BAR + 1 for s, *_ in data['Drums (Brushes)']}
-sb = {s // BAR + 1 for s, *_ in data['Drums (Sticks)']}
-check(bb & sb <= {76}, f'brushes and sticks never overlap (shared bars: {sorted(bb & sb)})')
-check(min(bb) == 3 and max(bb | sb) == BARS and len(set(range(3, BARS + 1)) - bb - sb) == 0,
-      'drums play in every bar from bar 3 to the end (bars 1-2 are piano alone)')
-check(set(range(3, 43)) <= bb and min(sb) == 43, f'brushes from bar 3 to bar 42, sticks enter at bar {min(sb)}')
+db = {s // BAR + 1 for s, *_ in data['Drums']}
+check(min(db) == 3 and set(range(3, BARS + 1)) <= db, 'drums play in every bar from bar 3 to the end (bars 1-2 are piano alone)')
 
 
 def energy(a, b):
-    n = [x for nm in ('Grand Piano', 'Drums (Brushes)', 'Drums (Sticks)', 'Bass', 'Organ')
+    n = [x for nm in ('Grand Piano', 'Drums', 'Bass', 'Organ')
          for x in data[nm] if a <= x[0] // BAR + 1 <= b]
     return len(n) / (b - a + 1), sum(x[3] for x in n) / len(n)
 
@@ -169,7 +164,7 @@ check(c1[0] < c2[0] and c1[1] < c2[1] < fin[1] + 0.01,
       f'<= final chorus {fin[0]:.0f} @ {fin[1]:.0f}')
 
 print('\n== single-instrument files ==')
-for fn, nms in [('piano_only.mid', ['Grand Piano']), ('drums_only.mid', ['Drums (Brushes)', 'Drums (Sticks)']),
+for fn, nms in [('piano_only.mid', ['Grand Piano']), ('drums_only.mid', ['Drums']),
                 ('bass_only.mid', ['Bass']), ('organ_only.mid', ['Organ']),
                 ('aux_percussion_only.mid', ['Shaker & Tambourine'])]:
     f = MidiFile(os.path.join(HERE, fn))
