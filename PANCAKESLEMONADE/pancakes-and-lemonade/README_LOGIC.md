@@ -38,9 +38,9 @@ Version 2 of the arrangement, rebuilt around your lyrics. The first version is s
 | `full_song_multitrack.mid` | **Open this one.** Every instrument on its own track |
 | `piano_only.mid`, `drums_only.mid`, `bass_only.mid`, `organ_only.mid`, `aux_percussion_only.mid` | One instrument each (drums_only has both drum tracks) |
 | `chord_guide.mid` | Plain chords for filling Logic's Chord Track |
-| `lead_sheet.html` | Chords by bar with your lyrics |
+| `lead_sheet.html` | Chords by bar with your lyrics, plus piano and guitar diagrams for every chord |
 | `drum_map.md` | Every drum note and what the drums do in each section |
-| `generate_piano.py`, `generate_arrangement.py`, `generate_chord_guide.py`, `generate_lead_sheet.py` | Rebuild everything (`pip install mido`) |
+| `generate_piano.py`, `generate_arrangement.py`, `generate_chord_guide.py`, `generate_lead_sheet.py`, `chord_shapes.py` | Rebuild everything (`pip install mido`) |
 | `validate_arrangement.py` | Re-checks the files (50 checks) |
 
 ## Tracks
