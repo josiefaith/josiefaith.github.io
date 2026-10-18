@@ -7,7 +7,7 @@ piano_svg(), guitar_svg()  small inline SVG diagrams, coloured by the page's CSS
 import os
 import re
 from collections import Counter, OrderedDict
-from itertools import product
+from itertools import combinations, product
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PC = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
@@ -79,7 +79,34 @@ def piano_voicings():
 WHITE = {0, 2, 4, 5, 7, 9, 11}
 
 
-def piano_svg(lh, rh, chord):
+def hand_fingers(notes, hand):
+    """Suggested piano fingering for one hand (1 = thumb, 5 = pinky).
+
+    Tries every set of fingers in order and keeps the one whose finger spacing best matches the
+    distance between the keys (about two semitones per finger, a little more next to the thumb).
+    Right hand: lowest note gets the lowest finger. Left hand: lowest note gets the highest finger.
+    """
+    notes = sorted(notes)
+    if len(notes) == 1:
+        return {notes[0]: 5 if hand == 'L' else 1}
+    best = None
+    for fs in combinations(range(1, 6), len(notes)):
+        seq = fs if hand == 'R' else tuple(reversed(fs))
+        if (hand == 'L' and seq[0] != 5) or (hand == 'R' and seq[0] != 1):
+            continue                                 # bass note on the pinky; right hand starts on the thumb
+        if hand == 'R' and len(notes) >= 3 and seq[-1] != 5:
+            continue
+        cost = 0
+        for (a, b), (fa, fb) in zip(zip(notes, notes[1:]), zip(seq, seq[1:])):
+            step = abs(fb - fa)
+            expect = 2 * step + (1 if 1 in (fa, fb) else 0)
+            cost += (b - a - expect) ** 2
+        if best is None or cost < best[0]:
+            best = (cost, seq)
+    return dict(zip(notes, best[1]))
+
+
+def piano_svg(lh, rh, chord, fingers=True):
     notes = lh + rh
     lo, hi = min(33, min(notes)), max(72, max(notes))  # same A1-C5 keyboard for every chord
     while lo % 12 not in WHITE:
@@ -99,6 +126,14 @@ def piano_svg(lh, rh, chord):
             x = x_of[p - 1] + w - bw / 2 + .5
             cls = 'k-lh' if p in lh else 'k-rh' if p in rh else 'k-b'
             parts.append(f'<rect class="{cls} blk" x="{x}" y=".5" width="{bw}" height="{bh}" rx="1"/>')
+    if fingers:
+        fmap = {**hand_fingers(lh, 'L'), **hand_fingers(rh, 'R')}
+        for p, f in fmap.items():
+            cls = 'fn-lh' if p in lh else 'fn-rh'
+            if p % 12 in WHITE:
+                parts.append(f'<text class="kfn {cls}" x="{x_of[p] + w / 2 + .5}" y="{h - 4}">{f}</text>')
+            else:
+                parts.append(f'<text class="kfn {cls} kfb" x="{x_of[p - 1] + w + .5}" y="{bh - 4}">{f}</text>')
     if 60 in x_of:                                   # mark middle C
         parts.append(f'<circle class="k-mid" cx="{x_of[60] + w / 2 + .5}" cy="{h + 6}" r="1.8"/>')
     parts.append('</svg>')
@@ -200,10 +235,30 @@ def shape_name(name, capo, easy):
     return nm.replace('b', '♭').replace('#', '♯')
 
 
+def guitar_fingers(combo, barre):
+    """Suggested fretting fingers (1 = index ... 4 = pinky); the barre, if any, is finger 1."""
+    out = [None] * 6
+    notes = sorted(((f, s) for s, f in enumerate(combo) if f), key=lambda x: (x[0], x[1]))
+    if not notes:
+        return out
+    base = barre[0] if barre else notes[0][0]
+    nxt = 1
+    for f, s in notes:
+        if barre and f == barre[0] and barre[1] <= s <= barre[2]:
+            out[s] = 1
+            nxt = 2
+            continue
+        finger = max(f - base + 1, nxt)
+        out[s] = min(finger, 4)
+        nxt = finger + 1
+    return out
+
+
 def guitar_svg(combo, barre, chord):
     sx, fy, top = 12, 13, 14
     W, H = 5 * sx + 16, top + MAX_FRET * fy + 6
     x = lambda s: 8 + s * sx
+    fingers = guitar_fingers(combo, barre)
     parts = [f'<svg class="gb" viewBox="0 0 {W} {H}" role="img" aria-label="{chord} on guitar">']
     parts.append(f'<rect class="g-nut" x="{x(0)}" y="{top - 2.5}" width="{5 * sx}" height="2.5"/>')
     for i in range(1, MAX_FRET + 1):
@@ -214,13 +269,16 @@ def guitar_svg(combo, barre, chord):
         f, a, b = barre
         cy = top + (f - .5) * fy
         parts.append(f'<rect class="g-dot" x="{x(a) - 4}" y="{cy - 4}" width="{x(b) - x(a) + 8}" height="8" rx="4"/>')
+        parts.append(f'<text class="g-fn" x="{x(a)}" y="{cy + 2.2}">1</text>')
     for s, f in enumerate(combo):
         if f is None:
             parts.append(f'<text class="g-mark" x="{x(s)}" y="{top - 5}">×</text>')
         elif f == 0:
             parts.append(f'<circle class="g-open" cx="{x(s)}" cy="{top - 7.5}" r="2.6"/>')
         elif not (barre and f == barre[0] and barre[1] <= s <= barre[2]):
-            parts.append(f'<circle class="g-dot" cx="{x(s)}" cy="{top + (f - .5) * fy}" r="4"/>')
+            cy = top + (f - .5) * fy
+            parts.append(f'<circle class="g-dot" cx="{x(s)}" cy="{cy}" r="4.4"/>')
+            parts.append(f'<text class="g-fn" x="{x(s)}" y="{cy + 2.2}">{fingers[s]}</text>')
     parts.append('</svg>')
     return ''.join(parts)
 

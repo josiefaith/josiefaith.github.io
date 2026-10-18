@@ -92,6 +92,7 @@ form_strip = ''.join(
     f'<li><span class="fs-name">{html.escape(n.replace(" (pull-back + lift)", " II"))}</span>'
     f'<span class="fs-bars">{s}–{s + len(c) - 1}</span></li>' for n, s, c in sections)
 
+VOICINGS = cs.piano_voicings()
 blocks = []
 for name, start, chords in sections:
     cells = []
@@ -101,7 +102,8 @@ for name, start, chords in sections:
         last = b == TOTAL
         lyr = LYRICS.get(b, '')
         lyr = list(lyr) if isinstance(lyr, tuple) else [lyr] + [''] * (len(bc) - 1)
-        cols = ''.join(f'<div class="col">{chord_html(c)}<span class="ly">{html.escape(l)}</span></div>'
+        cols = ''.join(f'<div class="col">{chord_html(c)}{cs.piano_svg(*VOICINGS[c], c)}'
+                       f'<span class="ly">{html.escape(l)}</span></div>'
                        for c, l in zip(bc, lyr))
         cells.append(
             f'<div class="bar{" two" if len(bc) == 2 else ""}{" end" if last else ""}">'
@@ -116,7 +118,6 @@ for name, start, chords in sections:
         f'<div class="grid">{"".join(cells)}</div></section>')
 
 # ---------- chord shapes ----------
-VOICINGS = cs.piano_voicings()
 CAPO, SHAPES, _ = cs.guitar_shapes(list(VOICINGS))
 DROPS = {'maj9': 'the 9th', 'm9': 'the 9th', '9': 'the 9th', '9sus4': 'the 9th', 'm11': 'the 11th',
          '13': 'the 13th', '7b9': 'the ♭9', 'maj7#11': 'the ♯11'}
@@ -142,10 +143,12 @@ shapes_html = f'''<section class="shapes" id="chords">
     <p class="howto">Every chord in the song, in the order it first appears. Tap a chord in the chart above to jump here.</p>
     <p class="howto"><strong>Piano:</strong> the voicing the piano in the track plays most often.
       <span class="tag t-lh">LH</span> left hand, <span class="tag t-rh">RH</span> right hand. The dot under
-      the keyboard marks middle C (C4).</p>
+      the keyboard marks middle C (C4). Numbers on the keys are suggested fingers: 1 = thumb, 5 = pinky,
+      in both hands. The same keyboard appears under each chord in the chart.</p>
     <p class="howto"><strong>Guitar:</strong> the easiest shape the search found for each chord, all with a
       <strong>capo on fret {CAPO}</strong>. The shape name is what your fingers make with the capo on. × means
-      don't play that string; ○ means play it open. Shapes marked "easier version" leave out one colour note,
+      don't play that string; ○ means play it open. Numbers in the dots are fretting fingers:
+      1 = index, 2 = middle, 3 = ring, 4 = pinky. Shapes marked "easier version" leave out one colour note,
       which the piano still plays.</p>
     <div class="cards">{"".join(cards)}</div>
   </section>'''
@@ -159,6 +162,7 @@ page = f'''<title>Pancakes and Lemonade</title>
   --paper: #fbf8f2; --ink: #2a2140; --muted: #6f6582; --rule: #cfc6dc;
   --accent: #8a5a12; --mark: #efe6f7;
   --key: #ffffff; --keyline: #8d84a0; --keyblack: #2a2140; --lh: #d39a2c; --rh: #7a5cc4;
+  --fn-lh: #2a2140; --fn-rh: #ffffff;
   --display: "Playfair Display", Georgia, serif;
   --body: "Lora", Georgia, serif;
   --hand: "Reenie Beanie", "Bradley Hand", cursive;
@@ -166,11 +170,13 @@ page = f'''<title>Pancakes and Lemonade</title>
 @media (prefers-color-scheme: dark) {{ :root:not([data-theme="light"]) {{
   --paper: #1b1529; --ink: #efe8f8; --muted: #a99dbd; --rule: #3e3456;
   --accent: #e8b25c; --mark: #2a2140; color-scheme: dark;
-  --key: #e9e4f1; --keyline: #3e3456; --keyblack: #120d1d; --lh: #e8b25c; --rh: #a78bea; }} }}
+  --key: #e9e4f1; --keyline: #3e3456; --keyblack: #120d1d; --lh: #e8b25c; --rh: #a78bea;
+  --fn-lh: #1b1529; --fn-rh: #1b1529; }} }}
 :root[data-theme="dark"] {{
   --paper: #1b1529; --ink: #efe8f8; --muted: #a99dbd; --rule: #3e3456;
   --accent: #e8b25c; --mark: #2a2140; color-scheme: dark;
-  --key: #e9e4f1; --keyline: #3e3456; --keyblack: #120d1d; --lh: #e8b25c; --rh: #a78bea; }}
+  --key: #e9e4f1; --keyline: #3e3456; --keyblack: #120d1d; --lh: #e8b25c; --rh: #a78bea;
+  --fn-lh: #1b1529; --fn-rh: #1b1529; }}
 body {{ background: var(--paper); color: var(--ink); font-family: var(--body); }}
 .sheet {{ max-width: 920px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 48px; }}
 .top {{ display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px;
@@ -195,7 +201,7 @@ h2 {{ font-family: var(--display); font-weight: 500; font-size: 21px; margin: 0;
   border-bottom: 1px solid var(--rule); display: flex; align-items: flex-start; }}
 .bar.end {{ border-right: 5px double var(--ink); }}
 .bn {{ position: absolute; top: 4px; left: 7px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }}
-.chords {{ display: flex; width: 100%; gap: 8px; min-width: 0; }}\n.col {{ flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 4px; }}\n.ly {{ font-style: italic; font-size: 14px; line-height: 1.3; color: var(--ink); overflow-wrap: anywhere; }}
+.chords {{ display: flex; flex-wrap: wrap; width: 100%; gap: 10px 12px; min-width: 0; }}\n.col {{ flex: 1 1 150px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }}\n.ly {{ font-style: italic; font-size: 14px; line-height: 1.3; color: var(--ink); overflow-wrap: anywhere; }}
 .ch {{ font-family: var(--body); font-weight: 600; font-size: 22px; white-space: nowrap; color: var(--ink); }}
 .ch sup {{ font-size: .58em; font-weight: 600; margin-left: 1px; }}
 .ch .sl {{ font-size: .8em; color: var(--muted); }}
@@ -220,6 +226,11 @@ a.ch:hover, a.ch:focus-visible {{ text-decoration: underline; text-decoration-co
 .k-lh {{ fill: var(--lh); stroke: var(--keyline); stroke-width: .6; }}
 .k-rh {{ fill: var(--rh); stroke: var(--keyline); stroke-width: .6; }}
 .k-mid {{ fill: var(--muted); }}
+.kfn {{ font: 600 6.5px var(--body); text-anchor: middle; }}
+.kfb {{ font-size: 5.5px; }}
+.fn-lh {{ fill: var(--fn-lh); }} .fn-rh {{ fill: var(--fn-rh); }}
+.g-fn {{ font: 700 6.5px var(--body); text-anchor: middle; fill: var(--paper); }}
+.bar .kb {{ margin: 2px 0 2px; }}
 .vn {{ margin: 6px 0 0; font-size: 13.5px; line-height: 1.6; font-variant-numeric: tabular-nums; }}
 .tag {{ display: inline-block; font-size: 10.5px; font-weight: 600; letter-spacing: .06em; padding: 0 5px;
   border-radius: 3px; color: var(--paper); line-height: 1.5; }}
