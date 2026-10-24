@@ -12,8 +12,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 # performance cues by bar (what the band does)
 CUES = {
-    1: 'piano hook', 3: 'drums enter', 13: 'ghost notes', 21: 'snare in', 25: 'light',
-    33: 'piano hook', 35: 'shaker', 39: 'Rhodes', 46: 'tom fill', 47: 'full band',
+    1: 'piano hook', 3: 'drums enter', 5: 'Wurli hook', 9: 'Wurli comps', 13: 'ghost notes', 21: 'snare in', 25: 'light',
+    33: 'piano hook', 35: 'Wurli hook, shaker', 39: 'Rhodes', 46: 'tom fill', 47: 'full band',
     54: 'fill', 55: 'half-time', 59: 'climb', 63: 'drop out', 64: 'build', 65: 'biggest',
     72: 'stop on 3', 73: 'pull back', 76: 'build', 77: 'full band', 80: 'fill',
     82: 'Rhodes answers', 85: 'rit.', 86: 'hold',

@@ -20,13 +20,13 @@ for your lyrics and melody.
 | File | What it is |
 |---|---|
 | `full_song_multitrack.mid` | **Open this one.** Every instrument on its own track |
-| `piano_only.mid`, `drums_only.mid`, `bass_only.mid`, `rhodes_only.mid`, `aux_percussion_only.mid` | One instrument each, same tempo map, lined up with the multitrack |
+| `piano_only.mid`, `drums_only.mid`, `bass_only.mid`, `rhodes_only.mid`, `aux_percussion_only.mid`, `wurli_only.mid` | One instrument each, same tempo map, lined up with the multitrack |
 | `chord_guide.mid` | Plain block chords for filling Logic's Chord Track |
 | `lead_sheet.html` | Chords by bar with a keyboard under each and a blank line for lyrics, then piano and guitar shapes for every chord |
 | `drum_map.md` | Every drum note and what the drums do in each section |
 | `song.py` | The chord chart and form (every script reads it) |
 | `generate_piano.py`, `generate_arrangement.py`, `generate_chord_guide.py`, `generate_lead_sheet.py`, `chord_shapes.py` | Rebuild everything |
-| `validate_arrangement.py` | Re-checks every file (64 checks) |
+| `validate_arrangement.py` | Re-checks every file (72 checks) |
 
 ## Tracks
 
@@ -37,6 +37,7 @@ for your lyrics and melody.
 | Bass | 2 | Bass → a fingerstyle electric bass (**Fingerstyle Bass** or **Liverpool Bass**). Set the region's **Transpose to 0** if it shows +12 |
 | Rhodes | 3 | Electric Piano → **Vintage Electric Piano** (Suitcase or Mark I) |
 | Shaker & Tambourine | 10 | the same kit as Drums (or Percussion → a shaker/tambourine kit) |
+| Wurli | 4 | Electric Piano → **Deluxe Classic** (the Wurlitzer you're already using on "Double Tracked Wurli") |
 
 The program changes in the file are only labels. Logic won't pick these sounds by itself, so load
 each one from the Library.
@@ -57,8 +58,26 @@ The files contain **no volume (CC7) or pan (CC10) messages**, so every fader and
 The piano uses the sustain pedal (CC64) and the Rhodes uses expression (CC11) for its swells; neither
 moves a fader.
 
-Starting levels: Piano 0 dB, Bass −3 dB, Drums −4 dB, Rhodes −10 dB (pan a little right),
+Starting levels: Piano 0 dB, Bass −3 dB, Drums −4 dB, Rhodes −10 dB (pan a little right), Wurli −8 dB (pan a little left),
 Shaker & Tambourine −14 dB (pan a little left). Then set them by ear around your vocal.
+
+## Adding the Wurli to your session
+
+`wurli_only.mid` is the electric piano part. Bars 5–8 are **your** Wurli notes from your session
+(the piano hook an octave down, with your extra C♯ and your new last bar), and they come back in
+bars 35–38. After that the Wurli comps with short two-note chords on the "and" of 2 and the "and"
+of 4, between the piano's backbeat chords. It gets fuller through the pre-choruses and choruses,
+sits out the intro, turnaround and half-time bridge, and lands the last chord with everyone.
+
+1. **File → Import → MIDI File…** → `wurli_only.mid`, and say **no** to importing tempo.
+2. Drag the Wurli region onto your **Double Tracked Wurli** track so it starts at **bar 1**.
+3. Delete or mute your two existing Wurli regions (bars 5 and 35). The new region already has
+   those notes, so playing both would double them.
+4. If you'd rather keep your own regions for bars 5–8 and 35–38, cut the new region at bars 5, 9,
+   35 and 39 (**Cmd-T** at the playhead) and delete those two four-bar pieces instead.
+
+The Rhodes track (from bar 39) is still there. If two electric pianos feel like too much in the
+choruses, mute the Rhodes first; the Wurli carries the choruses on its own.
 
 ## Chord Track
 1. **File → Import → MIDI File…** → `chord_guide.mid` (don't import its tempo).
@@ -71,12 +90,12 @@ Shaker & Tambourine −14 dB (pan a little left). Then set them by ear around yo
 | Bars | Section | Chords (two in a bar = second on beat 3) | Band |
 |---|---|---|---|
 | 1–4 | Intro | A(add9) · D6/9 · A(add9) · E9sus4 | piano hook; soft hats from bar 3 |
-| 5–12 | Verse 1 | A(add9) · A/G · D/F♯ · D6/9 · Bm9 · C♯m7 F♯m9 · Dmaj9 · E9sus4 E | kick on 1, the "a" of 2 and the "and" of 3; cross-stick and piano on 2 and 4 |
-| 13–20 | Verse 2 | same as verse 1 | adds ghost snares and a 16th skip in the hats |
-| 21–24 | Pre-Chorus 1 | Bm9 · C♯m7 · Dmaj9 · E9sus4 E | real snare; climbs one step per bar |
+| 5–12 | Verse 1 | A(add9) · A/G · D/F♯ · D6/9 · Bm9 · C♯m7 F♯m9 · Dmaj9 · E9sus4 E | kick on 1, the "a" of 2 and the "and" of 3; cross-stick and piano on 2 and 4; Wurli plays your hook (5–8), then answers on the "and" of 2 and 4 |
+| 13–20 | Verse 2 | same as verse 1 | adds ghost snares and a 16th skip in the hats; Wurli keeps answering |
+| 21–24 | Pre-Chorus 1 | Bm9 · C♯m7 · Dmaj9 · E9sus4 E | real snare; climbs one step per bar; Wurli off-beat 8ths |
 | 25–32 | Chorus 1 | A6/9 · C♯m7 · Dmaj9 · B9 · A/C♯ · Dmaj9 · Bm9 C♯m7 · Dmaj9 E9sus4 | small: held piano chords, half the kit, no Rhodes |
 | 33–34 | Turnaround | A(add9) · F♯m9 E9sus4 | piano hook |
-| 35–42 | Verse 3 | same as verse 1 | shaker joins; Rhodes pads from bar 39 |
+| 35–42 | Verse 3 | same as verse 1 | Wurli hook again (35–38); shaker joins; Rhodes pads from bar 39 |
 | 43–46 | Pre-Chorus 2 | Bm9 · C♯m7 C♯7 · F♯m9 B9 · Dmaj9 E9sus4 | Rhodes swells, tom fill |
 | 47–54 | Chorus 2 | A6/9 · **C♯7** · **F♯m9** · B9 · A/C♯ · Dmaj9 · Bm9 C♯m7 · Dmaj9 E9sus4 | first full-band chorus |
 | 55–62 | Bridge | Gmaj9 · Gmaj7♯11 · Em9 · Em9 F♯m7 · Gmaj9 · Gmaj7♯11 · Bm9 · C♯7 | half-time, Rhodes swells; climbs back from bar 59 |
@@ -92,12 +111,12 @@ with C♯ (the ♯11). There are no minor-seven-flat-five or flat-nine chords.
 
 ## What was verified and what wasn't
 
-**Verified by `validate_arrangement.py`** (64 checks, all passing):
-- Valid Type 1 MIDI at 480 PPQ with 6 named tracks. Drums and percussion are on channel 10; no CC7 or CC10 anywhere.
+**Verified by `validate_arrangement.py`** (72 checks, all passing):
+- Valid Type 1 MIDI at 480 PPQ with 7 named tracks. Drums and percussion are on channel 10; no CC7 or CC10 anywhere.
 - Tempo, meter (4/4), key (A) and 15 section markers are identical in every file, and the markers
   sit on the section boundaries.
 - 3:19 long. No stuck notes, nothing outside bars 1–86, and every track ends exactly on the last
-  barline. All five instruments play the last downbeat together.
+  barline. All six instruments play the last downbeat together.
 - Drum notes all come from the General MIDI map and match `drum_map.md`. The bass stays inside E1–G3.
 - The bass plays the chord's bass note on all 106 chord changes from bar 3. The Rhodes and the
   chord guide play only chord tones. 99% of kicks land with a bass note.

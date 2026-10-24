@@ -47,7 +47,7 @@ full = MidiFile(os.path.join(HERE, 'full_song_multitrack.mid'))
 print('== full_song_multitrack.mid ==')
 check(full.type == 1 and full.ticks_per_beat == PPQ == 480, f'Standard MIDI File type {full.type}, {full.ticks_per_beat} PPQ')
 names = [t.name for t in full.tracks]
-TRACKS = ['Grand Piano', 'Drums', 'Bass', 'Rhodes', 'Shaker & Tambourine']
+TRACKS = ['Grand Piano', 'Drums', 'Bass', 'Rhodes', 'Shaker & Tambourine', 'Wurli']
 check(names == ['Tempo & Meter'] + TRACKS, f'{len(names)} tracks: {names}')
 
 t, tempos, sigs, keys, marks = 0, [], [], [], []
@@ -71,8 +71,8 @@ check(180 <= full.length <= 240, f'duration {full.length:.2f} s ({int(full.lengt
       f'{TOTAL_BARS} bars (3:00-4:00 required)')
 
 EXPECT = {'Grand Piano': ({0}, 0), 'Drums': ({9}, 0), 'Bass': ({1}, 33), 'Rhodes': ({2}, 4),
-          'Shaker & Tambourine': ({9}, 0)}
-ALLOWED_CC = {'Grand Piano': {64}, 'Drums': set(), 'Bass': set(), 'Rhodes': {11}, 'Shaker & Tambourine': set()}
+          'Shaker & Tambourine': ({9}, 0), 'Wurli': ({3}, 4)}
+ALLOWED_CC = {'Grand Piano': {64}, 'Drums': set(), 'Bass': set(), 'Rhodes': {11}, 'Shaker & Tambourine': set(), 'Wurli': set()}
 data = {}
 for tr in full.tracks[1:]:
     ns, chans, hanging, end, cc = notes_of(tr)
@@ -94,7 +94,7 @@ check(landed == TRACKS, f'every instrument plays the last downbeat together: {la
 # ---- other files: same conductor track, matching parts ----
 print('\n== single-instrument files and chord guide ==')
 for fn, nm in [('piano_only.mid', 'Grand Piano'), ('drums_only.mid', 'Drums'), ('bass_only.mid', 'Bass'),
-               ('rhodes_only.mid', 'Rhodes'), ('aux_percussion_only.mid', 'Shaker & Tambourine'),
+               ('rhodes_only.mid', 'Rhodes'), ('aux_percussion_only.mid', 'Shaker & Tambourine'), ('wurli_only.mid', 'Wurli'),
                ('chord_guide.mid', None)]:
     f = MidiFile(os.path.join(HERE, fn))
     same_cond = list(f.tracks[0]) == list(full.tracks[0])
@@ -154,6 +154,17 @@ for n, st, a, b, _ in SECS:
         sec_of[x] = n
 rh_secs = sorted({sec_of[s // BAR + 1] for s, *_ in data['Rhodes']}, key=lambda n: [x[0] for x in SECS].index(n))
 check(not {'Chorus 1', 'Verse 1', 'Verse 2', 'Pre-Chorus 1'} & set(rh_secs), f'Rhodes sits out verses 1-2, pre 1 and chorus 1; plays in: {rh_secs}')
+import generate_arrangement as ga  # noqa: E402  (rebuilds the files identically; reads the Wurli hook data)
+hook_ticks = {(b - 1) * BAR + pos * S16: p for b, k in ga.WURLI_HOOK_BARS.items() for pos, p, _ in ga.WURLI_HOOK[k]}
+wu = data['Wurli']
+hook_ok = all(any(abs(s - t) <= 4 and p == hp for s, _, p, _ in wu) for t, hp in hook_ticks.items())
+check(hook_ok, f'Wurli plays josie\'s hook note for note in bars 5-8 and 35-38 ({len(hook_ticks)} notes)')
+wu_bad = [(s // BAR + 1, p) for s, _, p, _ in wu if s // BAR + 1 not in ga.WURLI_HOOK_BARS
+          and p % 12 not in chord_tones(chord_at(s + 8)[0])]
+check(not wu_bad, f'Wurli comping uses only chord tones outside the hook bars{": " + str(wu_bad[:5]) if wu_bad else ""}')
+wu_rng = [p for *_, p, _ in wu]
+check(min(wu_rng) >= 55 and max(wu_rng) <= 69 and not any(s // BAR + 1 <= 4 for s, *_ in wu),
+      f'Wurli stays in MIDI {min(wu_rng)}-{max(wu_rng)} (G2-A3 in Logic) and enters at the verse (bar 5)')
 kick = [s for s, _, p, _ in data['Drums'] if p == 36]
 locked = sum(1 for k in kick if any(abs(k - s) <= 12 for s, *_ in data['Bass']))
 check(locked / len(kick) >= 0.8, f'kick/bass lock: {locked}/{len(kick)} kicks land with a bass note')

@@ -7,8 +7,8 @@ Reads (never writes):
 
 Writes, next to this script:
   full_song_multitrack.mid   Type 1: Tempo & Meter, Grand Piano, Drums, Bass, Rhodes,
-                             Shaker & Tambourine
-  drums_only.mid, bass_only.mid, rhodes_only.mid, aux_percussion_only.mid
+                             Shaker & Tambourine, Wurli
+  drums_only.mid, bass_only.mid, rhodes_only.mid, aux_percussion_only.mid, wurli_only.mid
   drum_map.md                every drum note used, with velocity conventions
 
 Every instrument has its own random stream (fixed seeds), so editing one part never shifts another
@@ -21,7 +21,7 @@ from collections import Counter
 
 from mido import Message, MetaMessage, MidiFile, MidiTrack
 
-from song import BAR, CH, END, PPQ, S16, TOTAL_BARS, VERSE_KICK, sections, timeline
+from song import BAR, CH, END, PPQ, QUALITY, S16, TOTAL_BARS, VERSE_KICK, parse, sections, timeline
 from generate_piano import voice
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -34,7 +34,7 @@ assert len(markers) == len(SECTIONS), 'form and markers disagree'
 TIMELINE = timeline()
 
 RNG = {k: random.Random(seed) for k, seed in
-       (('drums', 7701), ('bass', 3402), ('rhodes', 505), ('aux', 8203))}
+       (('drums', 7701), ('bass', 3402), ('rhodes', 505), ('aux', 8203), ('wurli', 2626))}
 
 # ---------- helpers ----------
 KICK, SIDESTICK, SNARE = 36, 37, 38
@@ -578,6 +578,88 @@ def rhodes_for(sec, i, bar):
                 hit('rhodes', bar, 0, p, 44, dur16=16, jitter=0)
 
 
+# ---------- Wurli (electric piano, channel 4): josie's hook, then light comping ----------
+# Bars 5-8 are josie's own Wurli part from her Logic session ("Double Tracked Wurli"): the intro piano
+# hook an octave down, with an extra C# on the "and" of 2 and her new last bar (D, F#, E#, E).
+# The same four bars return at the start of verse 3. MIDI note numbers (Logic C3 = 60).
+WURLI_HOOK = [
+    [(0, 61, 2), (2, 64, 1), (3, 66, 3), (6, 61, 2), (8, 64, 2), (10, 61, 2), (12, 59, 4)],
+    [(2, 62, 2), (4, 61, 2), (6, 59, 2), (8, 57, 6)],
+    [(0, 61, 2), (2, 64, 1), (3, 66, 3), (6, 61, 2), (8, 69, 2), (10, 66, 2), (12, 64, 4)],
+    [(2, 62, 2), (4, 66, 2), (6, 65, 2), (8, 64, 8)],
+]
+WURLI_HOOK_BARS = {5: 0, 6: 1, 7: 2, 8: 3, 35: 0, 36: 1, 37: 2, 38: 3}
+wurli_prev = [None]
+
+
+def guide_tones(chord, full=False):
+    """The 3rd and 7th (or the 6th / 9th / 5th when there's no 7th): the two notes that name the chord."""
+    r, qual, _, _ = parse(chord)
+    ivs = QUALITY[qual]
+    third = next(i for i in ivs if i in (3, 4, 5))
+    top = next((i for i in (10, 11, 9, 14) if i in ivs), 7)
+    pcs = [(r + third) % 12, (r + top) % 12]
+    if full:                                          # a third note on top for the choruses
+        extra = next((i for i in (14, 7, 9, 0) if i in ivs and (r + i) % 12 not in pcs), 0)
+        pcs.append((r + extra) % 12)
+    return pcs
+
+
+def wurli_voicing(chord, full=False):
+    wurli_prev[0] = voice(guide_tones(chord, full), wurli_prev[0], 55, 69, 62)
+    return wurli_prev[0]
+
+
+def w(bar, pos, vel, dur16=2, full=False):
+    for p in wurli_voicing(chord_at(bar, pos), full):
+        hit('wurli', bar, pos, p, vel, dur16=dur16 - 0.2, jitter=4)
+
+
+def wurli_for(sec, i, bar, lv):
+    st, name, n = sec['style'], sec['name'], len(sec['chords'])
+    last = i == n - 1
+    if bar in WURLI_HOOK_BARS:
+        for pos, p, dur in WURLI_HOOK[WURLI_HOOK_BARS[bar]]:
+            hit('wurli', bar, pos, p, lv + (4 if pos % 4 == 0 else 0), dur16=dur * 0.95, jitter=3)
+    elif st in ('verse', 'verse2') or (st == 'outro' and i < 4):
+        # answers the piano's backbeat chords (2 and 4) on the "and" of 2 and the "and" of 4
+        w(bar, 6, lv)
+        w(bar, 14, lv - 6)
+        if st == 'verse2' and i % 2 and len(chords_of(bar)) == 1:
+            w(bar, 11, lv - 12, dur16=1)
+    elif st == 'pre':
+        for pos in (2, 6, 10, 14):                    # off-beat 8ths that push into the chorus
+            if not (last and pos == 14 and name.endswith('1')):
+                w(bar, pos, lv + pos * 0.4)
+    elif st == 'chorus_light':                        # chorus 1: the verse answers, a little fuller
+        w(bar, 6, lv, full=True)
+        w(bar, 14, lv - 6, full=True)
+    elif st in ('chorus', 'final'):
+        w(bar, 4, lv, full=True)
+        w(bar, 14, lv - 4, full=True)
+        if i % 2 and not last:
+            w(bar, 7, lv - 14, dur16=1)
+    elif st == 'bridge' and i >= 4:                   # sits out the half-time, rejoins for the climb
+        for pos in ((6, 14) if i < 6 else (2, 6, 10, 14)):
+            w(bar, pos, lv + pos * 0.5)
+    elif st == 'breakdown' and i == 1:
+        for pos in (2, 6, 10, 14):
+            w(bar, pos, lv + pos * 1.5)
+    elif st == 'pullback':                            # one soft held chord per bar
+        w(bar, 0, lv, dur16=15)
+    elif st == 'outro':
+        if bar == TOTAL_BARS:                         # lands the last downbeat with everyone
+            for p in wurli_voicing(chord_at(bar, 0)):
+                hit('wurli', bar, 0, p, lv, dur16=16, jitter=0)
+        else:
+            w(bar, 0, lv, dur16=12)
+
+
+WURLI_LEVEL = {'Verse 1': (42, 44), 'Verse 2': (44, 47), 'Pre-Chorus 1': (48, 58), 'Chorus 1': (52, 56),
+               'Verse 3': (46, 49), 'Pre-Chorus 2': (52, 64), 'Chorus 2': (62, 66), 'Bridge': (52, 66),
+               'Breakdown': (50, 60), 'Final Chorus': (66, 70), 'Pull-back Chorus': (48, 50),
+               'Last Lift': (70, 74), 'Outro': (46, 38)}
+
 # ---------- render every bar ----------
 for sec in SECTIONS:
     lv0, lv1 = BASS_LEVEL[sec['name']]
@@ -588,6 +670,9 @@ for sec in SECTIONS:
         aux_for(sec, i, bar)
         bass_for(sec, i, bar, lv0 + (lv1 - lv0) * i / max(1, n - 1))
         rhodes_for(sec, i, bar)
+        if sec['name'] in WURLI_LEVEL:
+            w0, w1 = WURLI_LEVEL[sec['name']]
+            wurli_for(sec, i, bar, w0 + (w1 - w0) * i / max(1, n - 1))
 
 
 def tidy(notes):
@@ -613,9 +698,11 @@ TRACKS = {  # key: (track name, channel 0-based, GM program 0-based)
     'bass': ('Bass', 1, 33),
     'rhodes': ('Rhodes', 2, 4),
     'aux': ('Shaker & Tambourine', 9, 0),
+    'wurli': ('Wurli', 3, 4),
 }
 INSTR = {'drums': 'Standard Drum Kit (GM channel 10)', 'bass': 'Electric Bass (finger)',
-         'rhodes': 'Electric Piano 1', 'aux': 'Percussion (GM channel 10)'}
+         'rhodes': 'Electric Piano 1', 'aux': 'Percussion (GM channel 10)',
+         'wurli': 'Electric Piano (Wurlitzer)'}
 
 
 def build_track(key):
@@ -668,11 +755,12 @@ def save(path, tracks):
 
 
 full = save('full_song_multitrack.mid', [copy_track(orig.tracks[1])] +
-            [band[k] for k in ('drums', 'bass', 'rhodes', 'aux')])
+            [band[k] for k in ('drums', 'bass', 'rhodes', 'aux', 'wurli')])
 save('drums_only.mid', [band['drums']])
 save('bass_only.mid', [band['bass']])
 save('rhodes_only.mid', [band['rhodes']])
 save('aux_percussion_only.mid', [band['aux']])
+save('wurli_only.mid', [band['wurli']])
 
 # ---------- drum map documentation (generated so it always matches the file) ----------
 cnt = {k: Counter(p for _, p, _, _ in parts[k]) for k in ('drums', 'aux')}
