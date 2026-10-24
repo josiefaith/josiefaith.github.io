@@ -1,4 +1,4 @@
-"""Half Past Noon: the chord chart, form and grooves, shared by every generator.
+"""It's Rainin' Honey: the chord chart, form and grooves, shared by every generator.
 
 A major, 4/4, 104 BPM, straight feel. Bridge borrows the flat-seven (G) with a Lydian #11.
 Nothing here writes files; generate_piano.py, generate_arrangement.py, generate_chord_guide.py,
@@ -6,7 +6,7 @@ generate_lead_sheet.py and validate_arrangement.py all import it.
 """
 import re
 
-TITLE = 'Half Past Noon'
+TITLE = "It's Rainin' Honey"
 KEY = 'A'                # MIDI key signature
 KEY_NAME = 'A major'
 BPM = 104

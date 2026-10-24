@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build lead_sheet.html for Half Past Noon: chords by bar with a keyboard diagram and an empty
+"""Build lead_sheet.html for It's Rainin' Honey: chords by bar with a keyboard diagram and an empty
 lyric line under each, then one card per chord with the piano voicing and a barre-free guitar shape."""
 import html
 import os

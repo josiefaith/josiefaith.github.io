@@ -1,4 +1,4 @@
-# Half Past Noon: Logic Pro Guide
+# It's Rainin' Honey: Logic Pro Guide
 
 A sister song to *Pancakes and Lemonade*. Pancakes is the bittersweet morning; this one is
 bright daytime: sunnier, bouncier, a little cheeky. The piano leads, and the band leaves room

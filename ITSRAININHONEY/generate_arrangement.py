@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the band arrangement for "Half Past Noon" around piano_only.mid.
+"""Build the band arrangement for "It's Rainin' Honey" around piano_only.mid.
 
 Reads (never writes):
   piano_only.mid   the piano part, tempo map, meter, key and markers
@@ -678,7 +678,7 @@ save('aux_percussion_only.mid', [band['aux']])
 cnt = {k: Counter(p for _, p, _, _ in parts[k]) for k in ('drums', 'aux')}
 NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 sec_bars = {s['name']: f"{s['start']}-{s['start'] + len(s['chords']) - 1}" for s in SECTIONS}
-lines = ['# Drum map: Half Past Noon', '',
+lines = ["# Drum map: It's Rainin' Honey", '',
          'Both percussion tracks ("Drums" and "Shaker & Tambourine") use **MIDI channel 10** and the',
          '**General MIDI percussion map**. Logic calls middle C (note 60) **C3**, so note 36 shows up as',
          '**C1** in the Piano Roll.', '',

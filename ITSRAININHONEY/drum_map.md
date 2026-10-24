@@ -1,4 +1,4 @@
-# Drum map: Half Past Noon
+# Drum map: It's Rainin' Honey
 
 Both percussion tracks ("Drums" and "Shaker & Tambourine") use **MIDI channel 10** and the
 **General MIDI percussion map**. Logic calls middle C (note 60) **C3**, so note 36 shows up as

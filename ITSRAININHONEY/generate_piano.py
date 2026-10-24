@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate piano_only.mid for "Half Past Noon".
+"""Generate piano_only.mid for "It's Rainin' Honey".
 
 A major, 4/4, 104 BPM (short ritardando over the last two bars). Type 1 MIDI: track 0 = tempo, meter,
 key and section markers; track 1 = "Grand Piano" (GM program 1, Acoustic Grand Piano).

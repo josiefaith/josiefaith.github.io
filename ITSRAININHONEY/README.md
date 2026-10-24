@@ -1,4 +1,4 @@
-# Half Past Noon
+# It's Rainin' Honey
 
 A sister song to [Pancakes and Lemonade](../PANCAKESLEMONADE/): the same warmth, but
 bright daytime instead of bittersweet morning. Piano-led, bouncy and a little cheeky. The

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reopen every Half Past Noon file and check structure, alignment, musical sanity, playability,
+"""Reopen every It's Rainin' Honey file and check structure, alignment, musical sanity, playability,
 the loudness arc and originality against Pancakes and Lemonade. Exit code 1 on any failure."""
 import ast
 import math
